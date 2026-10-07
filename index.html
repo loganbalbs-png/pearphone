@@ -2,123 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,
-                   maximum-scale=1.0, user-scalable=no">
+          content="width=device-width,
+                   initial-scale=1.0,
+                   maximum-scale=1.0,
+                   user-scalable=no">
 
     <title>Pear Phone</title>
 
     <style>
+
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         html,
         body {
+            margin: 0;
+            padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #000;
+            background: white;
             touch-action: none;
         }
 
-        #phone {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-            background: #000;
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #screen {
+        /* Main phone area */
+        #phone-container {
+            position: relative;
+
+            /* Keeps the phone vertical and large */
+            height: 96vh;
+            width: min(96vw, 96vh);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            touch-action: none;
+        }
+
+        /* THE ACTUAL PICTURE */
+        #phone-image {
+            position: absolute;
+
             width: 100%;
             height: 100%;
+
             object-fit: contain;
-            display: block;
+
             user-select: none;
             -webkit-user-drag: none;
+
             pointer-events: none;
+
+            /*
+             * 15% visual enlargement while keeping
+             * the entire phone as the main visual.
+             */
+            transform: scale(1.15);
         }
 
-        .touch-zone {
+        /*
+         * Invisible buttons that sit directly
+         * over the apps in the picture.
+         */
+        .app-button {
             position: absolute;
-            border: none;
+
             background: transparent;
+            border: none;
+
             cursor: pointer;
+
             z-index: 10;
+
+            padding: 0;
         }
 
-        .touch-zone:active {
-            background: rgba(255, 255, 255, 0.12);
+        .app-button:active {
+            background: rgba(255,255,255,0.12);
             border-radius: 50%;
         }
 
-        #appScreen {
-            position: absolute;
+        /* App screen */
+        #app-screen {
+            position: fixed;
+
             inset: 0;
+
+            background: #0788ff;
+
             display: none;
-            z-index: 20;
-            background: #000;
+
+            z-index: 100;
+
+            color: white;
+
+            font-family: Arial, sans-serif;
         }
 
-        #appScreen.active {
-            display: block;
+        #app-screen.open {
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
         }
 
-        #appContent {
-            width: 100%;
-            height: 100%;
-        }
-
-        #backButton {
+        #back-button {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 30;
+
+            top: 20px;
+            left: 20px;
+
+            width: 50px;
+            height: 50px;
+
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            background: rgba(0, 0, 0, 0.65);
+
+            background: rgba(0,0,0,0.65);
+
             color: white;
-            font-size: 25px;
+
+            font-size: 32px;
+
             cursor: pointer;
         }
 
-        #moodInput {
-            width: 70%;
-            padding: 15px;
-            font-size: 20px;
-            border-radius: 10px;
-            border: 2px solid #ff4fa3;
+        #app-title {
+            font-size: 42px;
+            margin-bottom: 15px;
         }
 
-        .hidden {
-            display: none !important;
+        #app-description {
+            font-size: 20px;
         }
+
     </style>
 </head>
 
 <body>
 
-<div id="phone">
+    <div id="phone-container">
 
-    <!-- Main Pear Phone image -->
-    <img id="screen" src="Parphone.png" alt="Pear Phone">
+        <!-- THE PICTURE IS THE PHONE -->
+        <img
+            id="phone-image"
+            src="Parphone.png"
+            alt="Pear Phone"
+        >
 
-    <!-- Interactive app buttons are created by app.js -->
-
-    <!-- Custom app screen -->
-    <div id="appScreen">
-        <button id="backButton">‹</button>
-        <div id="appContent"></div>
     </div>
 
-</div>
 
-<script src="app.js"></script>
+    <!-- Temporary app screen -->
+    <div id="app-screen">
+
+        <button id="back-button">‹</button>
+
+        <h1 id="app-title"></h1>
+
+        <p id="app-description"></p>
+
+    </div>
+
+
+    <script src="app.js"></script>
 
 </body>
 </html>
