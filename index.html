@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -25,7 +23,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: white;
+            background: #ffffff;
         }
 
         body {
@@ -36,13 +34,11 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-
         /* =====================================================
            PHONE
            ===================================================== */
 
         #phoneArea {
-
             position: relative;
 
             width: min(92vh, 92vw);
@@ -51,10 +47,8 @@
             flex-shrink: 0;
 
             /*
-             * The ENTIRE phone rotates.
-             * The apps rotate with it.
+             * Sideways Pear Phone + zoom
              */
-
             transform: rotate(90deg) scale(1.28);
 
             transform-origin: center center;
@@ -62,13 +56,11 @@
             touch-action: none;
         }
 
-
         /* =====================================================
            YOUR ACTUAL PEAR PHONE IMAGE
            ===================================================== */
 
         #phoneImage {
-
             position: absolute;
 
             left: 0;
@@ -84,23 +76,18 @@
             pointer-events: none;
 
             user-select: none;
-
             -webkit-user-select: none;
-
             -webkit-user-drag: none;
         }
 
-
         /* =====================================================
-           INVISIBLE APP BUTTONS
+           INVISIBLE CLICKABLE APP AREAS
            ===================================================== */
 
         .appButton {
-
             position: absolute;
 
             border: none;
-
             padding: 0;
             margin: 0;
 
@@ -113,29 +100,16 @@
             touch-action: manipulation;
         }
 
-
-        /*
-         * Tiny feedback when pressed.
-         */
-
         .appButton:active {
-
-            background: rgba(255,255,255,0.20);
-
+            background: rgba(255, 255, 255, 0.20);
             border-radius: 50%;
         }
 
-
         /* =====================================================
-           APP TAB
+           SMALL APP TAB
            ===================================================== */
 
         #appWindow {
-
-            /*
-             * SMALLER THAN BEFORE
-             */
-
             position: absolute;
 
             left: 32%;
@@ -157,45 +131,26 @@
             border-radius: 13px;
 
             box-shadow:
-                0 6px 18px rgba(0,0,0,0.55);
-
-            /*
-             * IMPORTANT:
-             *
-             * We do NOT rotate the app backwards.
-             *
-             * The whole phone already rotates.
-             *
-             * Therefore the app stays sideways
-             * exactly like the Pear Phone.
-             */
+                0 6px 18px rgba(0, 0, 0, 0.55);
 
             font-family: Arial, Helvetica, sans-serif;
         }
 
-
         #appWindow.open {
-
             display: flex;
-
             flex-direction: column;
         }
-
 
         /* =====================================================
            APP HEADER
            ===================================================== */
 
         #appHeader {
-
             height: 34px;
-
             min-height: 34px;
 
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
             padding: 0 7px;
@@ -210,26 +165,18 @@
             color: #111;
 
             font-weight: bold;
-
         }
-
 
         #appTitle {
-
             font-size: 12px;
-
         }
 
-
-        /*
-         * This is the black Pear Phone button
-         * INSIDE the app tab.
-         */
+        /* =====================================================
+           BLACK PEAR BUTTON
+           ===================================================== */
 
         #closeApp {
-
             width: 24px;
-
             height: 24px;
 
             border: none;
@@ -240,7 +187,7 @@
 
             color: white;
 
-            font-size: 16px;
+            font-size: 14px;
 
             line-height: 24px;
 
@@ -249,13 +196,11 @@
             cursor: pointer;
         }
 
-
         /* =====================================================
            APP CONTENT
            ===================================================== */
 
         #appContent {
-
             flex: 1;
 
             overflow: auto;
@@ -271,9 +216,7 @@
             touch-action: auto;
         }
 
-
         .appButtonLarge {
-
             width: 100%;
 
             min-height: 30px;
@@ -293,9 +236,7 @@
             cursor: pointer;
         }
 
-
         .appInput {
-
             width: 100%;
 
             min-height: 30px;
@@ -311,9 +252,7 @@
             font-size: 11px;
         }
 
-
         .appTextarea {
-
             width: 100%;
 
             height: 55px;
@@ -329,9 +268,7 @@
             resize: none;
         }
 
-
         .card {
-
             background: white;
 
             border: 1px solid #ccc;
@@ -343,9 +280,7 @@
             margin-bottom: 5px;
         }
 
-
         .photoGrid {
-
             display: grid;
 
             grid-template-columns:
@@ -354,9 +289,7 @@
             gap: 4px;
         }
 
-
         .photo {
-
             aspect-ratio: 1;
 
             display: flex;
@@ -377,24 +310,10 @@
             font-size: 20px;
         }
 
-
-        /* =====================================================
-           SLAP PAGE
-           ===================================================== */
-
-        #slapControls {
-
-            display: none;
-        }
-
-
     </style>
-
 </head>
 
-
 <body>
-
 
     <!-- =====================================================
          PEAR PHONE
@@ -402,6 +321,7 @@
 
     <div id="phoneArea">
 
+        <!-- YOUR ACTUAL IMAGE -->
 
         <img
             id="phoneImage"
@@ -411,15 +331,9 @@
         >
 
 
-        <!-- APP BUTTONS CREATED BY JAVASCRIPT -->
-
-
-        <!-- =================================================
-             SMALL APP WINDOW
-             ================================================= -->
+        <!-- APP TAB -->
 
         <div id="appWindow">
-
 
             <div id="appHeader">
 
@@ -427,8 +341,7 @@
                     App
                 </span>
 
-
-                <!-- BLACK BUTTON -->
+                <!-- BLACK BUTTON TO EXIT APP -->
 
                 <button
                     id="closeApp"
@@ -440,12 +353,9 @@
 
             </div>
 
-
             <div id="appContent"></div>
 
-
         </div>
-
 
     </div>
 
@@ -453,5 +363,4 @@
     <script src="app.js"></script>
 
 </body>
-
 </html>
