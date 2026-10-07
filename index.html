@@ -2,17 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport"
-          content="width=device-width,
-                   initial-scale=1.0,
-                   maximum-scale=1.0,
-                   user-scalable=no">
+          content="width=device-width, initial-scale=1.0,
+          maximum-scale=1.0, user-scalable=no">
 
     <title>Pear Phone</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -24,33 +20,32 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: white;
+            background: #ffffff;
             touch-action: none;
         }
 
         body {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
 
-        /* Main phone area */
-        #phone-container {
+        /*
+         * This is the actual phone picture.
+         * It stays vertical, centered and large.
+         */
+        #phone {
             position: relative;
 
-            /* Keeps the phone vertical and large */
-            height: 96vh;
-            width: min(96vw, 96vh);
+            width: min(90vw, 83vh);
+            height: min(90vw, 83vh);
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-shrink: 0;
 
             touch-action: none;
         }
 
-        /* THE ACTUAL PICTURE */
-        #phone-image {
+        #phoneImage {
             position: absolute;
 
             width: 100%;
@@ -58,122 +53,114 @@
 
             object-fit: contain;
 
+            transform: scale(1.15);
+
             user-select: none;
             -webkit-user-drag: none;
 
             pointer-events: none;
-
-            /*
-             * 15% visual enlargement while keeping
-             * the entire phone as the main visual.
-             */
-            transform: scale(1.15);
         }
 
         /*
-         * Invisible buttons that sit directly
-         * over the apps in the picture.
+         * Invisible clickable areas.
+         * These sit directly ON TOP of the apps
+         * in the picture.
          */
-        .app-button {
+        .appButton {
             position: absolute;
 
+            border: 0;
+            padding: 0;
+            margin: 0;
+
             background: transparent;
-            border: none;
+
+            z-index: 5;
 
             cursor: pointer;
 
-            z-index: 10;
-
-            padding: 0;
+            touch-action: manipulation;
         }
 
-        .app-button:active {
-            background: rgba(255,255,255,0.12);
-            border-radius: 50%;
-        }
-
-        /* App screen */
-        #app-screen {
+        /*
+         * App screen
+         */
+        #appScreen {
             position: fixed;
-
             inset: 0;
 
-            background: #0788ff;
+            z-index: 100;
 
             display: none;
 
-            z-index: 100;
+            background: #087ee8;
 
             color: white;
 
             font-family: Arial, sans-serif;
-        }
-
-        #app-screen.open {
-            display: flex;
-
-            flex-direction: column;
 
             align-items: center;
-
             justify-content: center;
+            flex-direction: column;
         }
 
-        #back-button {
+        #appScreen.open {
+            display: flex;
+        }
+
+        #appTitle {
+            font-size: 42px;
+            margin: 0 0 10px;
+        }
+
+        #appText {
+            font-size: 20px;
+        }
+
+        #backButton {
             position: absolute;
 
             top: 20px;
             left: 20px;
 
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
 
-            border: none;
+            border: 0;
             border-radius: 50%;
 
-            background: rgba(0,0,0,0.65);
+            background: rgba(0, 0, 0, 0.65);
 
             color: white;
 
-            font-size: 32px;
+            font-size: 34px;
 
             cursor: pointer;
         }
-
-        #app-title {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        #app-description {
-            font-size: 20px;
-        }
-
     </style>
 </head>
 
 <body>
 
-    <div id="phone-container">
+    <div id="phone">
 
-        <!-- THE PICTURE IS THE PHONE -->
+        <!-- THIS IS THE ACTUAL PEAR PHONE PICTURE -->
         <img
-            id="phone-image"
-            src="Parphone.png"
+            id="phoneImage"
+            src="pearphone.png"
             alt="Pear Phone"
         >
 
     </div>
 
 
-    <!-- Temporary app screen -->
-    <div id="app-screen">
+    <div id="appScreen">
 
-        <button id="back-button">‹</button>
+        <button id="backButton">‹</button>
 
-        <h1 id="app-title"></h1>
+        <h1 id="appTitle"></h1>
 
-        <p id="app-description"></p>
+        <div id="appText"></div>
 
     </div>
 
