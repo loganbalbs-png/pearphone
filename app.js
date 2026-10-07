@@ -1,73 +1,416 @@
 "use strict";
 
-
 /* =========================================================
    ELEMENTS
    ========================================================= */
 
-const phoneArea =
-    document.getElementById("phoneArea");
+const phoneArea = document.getElementById("phoneArea");
+const phoneImage = document.getElementById("phoneImage");
+const appWindow = document.getElementById("appWindow");
+const appTitle = document.getElementById("appTitle");
+const appContent = document.getElementById("appContent");
+const closeApp = document.getElementById("closeApp");
 
-const phoneImage =
-    document.getElementById("phoneImage");
+const pearHomeButton =
+    document.getElementById("pearHomeButton");
 
-const appWindow =
-    document.getElementById("appWindow");
+const pearKeyboard =
+    document.getElementById("pearKeyboard");
 
-const appTitle =
-    document.getElementById("appTitle");
+const slapTypingArea =
+    document.getElementById("slapTypingArea");
 
-const appContent =
-    document.getElementById("appContent");
-
-const closeApp =
-    document.getElementById("closeApp");
+const slapTextBar =
+    document.getElementById("slapTextBar");
 
 
 /* =========================================================
-   YOUR EXACT FILE NAMES
+   FILE NAMES
    ========================================================= */
 
 const PAGE1 = "pearphone.png";
-
 const PAGE2 = "pearphonepage2.png";
-
 const SLAP = "theslap.png";
 
 
 /* =========================================================
-   CURRENT PAGE
+   STATE
    ========================================================= */
 
 let currentPage = "page1";
 
-
-/* =========================================================
-   SWIPE VARIABLES
-   ========================================================= */
-
 let startX = 0;
 let startY = 0;
 let swipeStarted = false;
+
+let keyboardOpen = false;
+let keyboardTarget = null;
+
+let keyboardText = "";
+
+let currentApp = null;
+
+
+/* =========================================================
+   KEYBOARD SOUND
+   ========================================================= */
+
+let audioContext = null;
+
+function playKeySound() {
+
+    try {
+
+        if (!audioContext) {
+            audioContext =
+                new (window.AudioContext ||
+                    window.webkitAudioContext)();
+        }
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+
+        const oscillator =
+            audioContext.createOscillator();
+
+        const gain =
+            audioContext.createGain();
+
+        oscillator.type = "square";
+
+        oscillator.frequency.value = 520;
+
+        gain.gain.setValueAtTime(
+            0.035,
+            audioContext.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + 0.045
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            audioContext.currentTime + 0.045
+        );
+
+    } catch (error) {
+        // Audio is optional.
+    }
+}
+
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+
+const keyboardRows = [
+    ["1","2","3","4","5","6","7","8","9","0"],
+    ["Q","W","E","R","T","Y","U","I","O","P"],
+    ["A","S","D","F","G","H","J","K","L"],
+    ["Z","X","C","V","B","N","M","⌫"],
+    ["SPACE","ENTER"]
+];
+
+
+function createKeyboard() {
+
+    if (!pearKeyboard) {
+        return;
+    }
+
+    pearKeyboard.innerHTML = "";
+
+    keyboardRows.forEach(function(row) {
+
+        const rowElement =
+            document.createElement("div");
+
+        rowElement.className =
+            "keyboardRow";
+
+        row.forEach(function(key) {
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+
+            button.className = "key";
+
+            if (key === "SPACE") {
+                button.classList.add("space");
+                button.textContent = "SPACE";
+            }
+
+            else if (key === "ENTER") {
+                button.classList.add("enter");
+                button.textContent = "ENTER";
+            }
+
+            else if (key === "⌫") {
+                button.classList.add("backspace");
+                button.textContent = "⌫";
+            }
+
+            else {
+                button.textContent = key;
+            }
+
+            button.addEventListener(
+                "pointerdown",
+                function(event) {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    playKeySound();
+
+                    handleKeyboardKey(key);
+
+                }
+            );
+
+            rowElement.appendChild(button);
+
+        });
+
+        pearKeyboard.appendChild(rowElement);
+
+    });
+}
+
+
+function openKeyboard(target) {
+
+    if (!pearKeyboard) {
+        return;
+    }
+
+    keyboardTarget = target;
+
+    keyboardText =
+        target.dataset.value || "";
+
+    keyboardOpen = true;
+
+    pearKeyboard.classList.add("open");
+
+    updateTypingDisplay();
+
+    setTimeout(function() {
+
+        if (target) {
+            target.scrollIntoView({
+                block: "nearest"
+            });
+        }
+
+    }, 50);
+}
+
+
+function closeKeyboard() {
+
+    keyboardOpen = false;
+
+    keyboardTarget = null;
+
+    keyboardText = "";
+
+    if (pearKeyboard) {
+        pearKeyboard.classList.remove("open");
+    }
+
+}
+
+
+function handleKeyboardKey(key) {
+
+    if (!keyboardTarget) {
+        return;
+    }
+
+    if (key === "⌫") {
+
+        keyboardText =
+            keyboardText.slice(
+                0,
+                -1
+            );
+
+    }
+
+    else if (key === "SPACE") {
+
+        keyboardText += " ";
+
+    }
+
+    else if (key === "ENTER") {
+
+        keyboardTarget.dataset.value =
+            keyboardText;
+
+        updateTypingDisplay();
+
+        closeKeyboard();
+
+        if (
+            currentApp === "Lingo"
+        ) {
+
+            const result =
+                document.getElementById(
+                    "translation"
+                );
+
+            if (result) {
+
+                result.textContent =
+                    keyboardText
+                    ? keyboardText +
+                      " → Hello!"
+                    : "";
+
+            }
+
+        }
+
+        return;
+
+    }
+
+    else {
+
+        keyboardText += key;
+
+    }
+
+    keyboardTarget.dataset.value =
+        keyboardText;
+
+    updateTypingDisplay();
+}
+
+
+function updateTypingDisplay() {
+
+    if (!keyboardTarget) {
+        return;
+    }
+
+    const value =
+        keyboardText;
+
+    if (
+        keyboardTarget.id ===
+        "slapTextBar"
+    ) {
+
+        if (value.length > 0) {
+
+            keyboardTarget.textContent =
+                value;
+
+            keyboardTarget.classList.remove(
+                "placeholder"
+            );
+
+        } else {
+
+            keyboardTarget.textContent =
+                "Tap here to type...";
+
+            keyboardTarget.classList.add(
+                "placeholder"
+            );
+
+        }
+
+        return;
+    }
+
+    keyboardTarget.value =
+        value;
+}
 
 
 /* =========================================================
    CLOSE APP
    ========================================================= */
 
-closeApp.addEventListener("click", function(event) {
+function closeCurrentApp() {
 
-    event.stopPropagation();
+    closeKeyboard();
+
+    if (slapTypingArea) {
+        slapTypingArea.classList.remove("open");
+    }
 
     appWindow.classList.remove("open");
 
     appContent.innerHTML = "";
 
-});
+    currentApp = null;
+}
+
+
+if (closeApp) {
+
+    closeApp.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            closeCurrentApp();
+
+        }
+    );
+
+}
 
 
 /* =========================================================
-   REMOVE APP BUTTONS
+   BOTTOM PEAR PHONE BUTTON
+   ========================================================= */
+
+if (pearHomeButton) {
+
+    pearHomeButton.addEventListener(
+        "pointerdown",
+        function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+        }
+    );
+
+    pearHomeButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            closeCurrentApp();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   APP BUTTONS
    ========================================================= */
 
 function clearAppButtons() {
@@ -75,17 +418,11 @@ function clearAppButtons() {
     document
         .querySelectorAll(".appButton")
         .forEach(function(button) {
-
             button.remove();
-
         });
 
 }
 
-
-/* =========================================================
-   CREATE CLICKABLE APP
-   ========================================================= */
 
 function addApp(
     name,
@@ -98,16 +435,15 @@ function addApp(
     const button =
         document.createElement("button");
 
-
     button.type = "button";
 
-    button.className = "appButton";
+    button.className =
+        "appButton";
 
     button.setAttribute(
         "aria-label",
         name
     );
-
 
     button.style.left =
         left + "%";
@@ -136,6 +472,7 @@ function addApp(
         "click",
         function(event) {
 
+            event.preventDefault();
             event.stopPropagation();
 
             openApp(name);
@@ -157,142 +494,71 @@ function showPage1() {
 
     currentPage = "page1";
 
-    appWindow.classList.remove("open");
+    closeCurrentApp();
 
     phoneImage.src = PAGE1;
 
     clearAppButtons();
 
 
-    /* Messages */
-
     addApp(
         "Messages",
-        43,
-        25,
-        11,
-        11
+        43, 25, 11, 11
     );
-
-
-    /* Camera */
 
     addApp(
         "Camera",
-        54,
-        25,
-        11,
-        11
+        54, 25, 11, 11
     );
-
-
-    /* Social Fast */
 
     addApp(
         "Social Fast",
-        36,
-        36,
-        11,
-        11
+        36, 36, 11, 11
     );
-
-
-    /* Stocks */
 
     addApp(
         "Stocks",
-        47,
-        36,
-        11,
-        11
+        47, 36, 11, 11
     );
-
-
-    /* Maps */
 
     addApp(
         "Maps",
-        58,
-        36,
-        11,
-        11
+        58, 36, 11, 11
     );
-
-
-    /* Photos */
 
     addApp(
         "Photos",
-        36,
-        47,
-        11,
-        11
+        36, 47, 11, 11
     );
-
-
-    /* Weather */
 
     addApp(
         "Weather",
-        47,
-        47,
-        11,
-        11
+        47, 47, 11, 11
     );
-
-
-    /* Notes */
 
     addApp(
         "Notes",
-        58,
-        47,
-        11,
-        11
+        58, 47, 11, 11
     );
-
-
-    /* iPodTunes */
 
     addApp(
         "iPodTunes",
-        30,
-        58,
-        11,
-        11
+        30, 58, 11, 11
     );
-
-
-    /* Settings */
 
     addApp(
         "Settings",
-        41,
-        58,
-        11,
-        11
+        41, 58, 11, 11
     );
-
-
-    /* Clock */
 
     addApp(
         "Clock",
-        52,
-        58,
-        11,
-        11
+        52, 58, 11, 11
     );
-
-
-    /* Videos */
 
     addApp(
         "Videos",
-        63,
-        58,
-        11,
-        11
+        63, 58, 11, 11
     );
 
 }
@@ -306,142 +572,71 @@ function showPage2() {
 
     currentPage = "page2";
 
-    appWindow.classList.remove("open");
+    closeCurrentApp();
 
     phoneImage.src = PAGE2;
 
     clearAppButtons();
 
 
-    /* Lingo */
-
     addApp(
         "Lingo",
-        38,
-        25,
-        11,
-        11
+        38, 25, 11, 11
     );
-
-
-    /* SplashFace */
 
     addApp(
         "SplashFace",
-        51,
-        25,
-        11,
-        11
+        51, 25, 11, 11
     );
-
-
-    /* Thumb */
 
     addApp(
         "Thumb",
-        31,
-        36,
-        11,
-        11
+        31, 36, 11, 11
     );
-
-
-    /* DanWarp */
 
     addApp(
         "DanWarp",
-        44,
-        36,
-        11,
-        11
+        44, 36, 11, 11
     );
-
-
-    /* Image */
 
     addApp(
         "Image",
-        56,
-        36,
-        11,
-        11
+        56, 36, 11, 11
     );
-
-
-    /* Chrono */
 
     addApp(
         "Chrono",
-        31,
-        47,
-        11,
-        11
+        31, 47, 11, 11
     );
-
-
-    /* ZapLook */
 
     addApp(
         "ZapLook",
-        44,
-        47,
-        11,
-        11
+        44, 47, 11, 11
     );
-
-
-    /* Weather */
 
     addApp(
         "Weather",
-        56,
-        47,
-        11,
-        11
+        56, 47, 11, 11
     );
-
-
-    /* Music */
 
     addApp(
         "Music",
-        27,
-        58,
-        11,
-        11
+        27, 58, 11, 11
     );
-
-
-    /* Monkey */
 
     addApp(
         "Monkey",
-        40,
-        58,
-        11,
-        11
+        40, 58, 11, 11
     );
-
-
-    /* Remark */
 
     addApp(
         "Remark",
-        52,
-        58,
-        11,
-        11
+        52, 58, 11, 11
     );
-
-
-    /* Settings */
 
     addApp(
         "Settings",
-        63,
-        58,
-        11,
-        11
+        63, 58, 11, 11
     );
 
 }
@@ -455,11 +650,47 @@ function showSlap() {
 
     currentPage = "slap";
 
-    appWindow.classList.remove("open");
+    closeCurrentApp();
 
     phoneImage.src = SLAP;
 
     clearAppButtons();
+
+    if (slapTypingArea) {
+
+        slapTypingArea.classList.add(
+            "open"
+        );
+
+        slapTextBar.dataset.value = "";
+
+        slapTextBar.textContent =
+            "Tap here to type...";
+
+        slapTextBar.classList.add(
+            "placeholder"
+        );
+
+    }
+
+}
+
+
+if (slapTextBar) {
+
+    slapTextBar.addEventListener(
+        "pointerdown",
+        function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            openKeyboard(
+                slapTextBar
+            );
+
+        }
+    );
 
 }
 
@@ -470,7 +701,18 @@ function showSlap() {
 
 function openApp(name) {
 
-    appTitle.textContent = name;
+    closeKeyboard();
+
+    if (slapTypingArea) {
+        slapTypingArea.classList.remove("open");
+    }
+
+    currentApp = name;
+
+    appTitle.textContent =
+        name === "SplashFace"
+            ? "Splash Face"
+            : name;
 
     appContent.innerHTML = "";
 
@@ -486,96 +728,64 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div class="card">
-                <b>Alex</b>
-                <br>
+                <b>Alex</b><br>
                 Hey! What are you doing?
             </div>
 
             <div class="card">
-                <b>Mom</b>
-                <br>
+                <b>Mom</b><br>
                 Don't forget dinner!
             </div>
 
-            <textarea
-                id="message"
-                class="appTextarea"
-                placeholder="Message..."
-            ></textarea>
+            <input
+                id="messageInput"
+                class="appInput"
+                placeholder="Type a message..."
+            >
 
             <button
                 id="sendMessage"
                 class="appButtonLarge"
             >
-                Send
+                Send Message
             </button>
 
-            <p id="messageResult"></p>
+            <div
+                id="messageResult"
+                class="card"
+            >
+                No new messages.
+            </div>
 
         `;
 
+        const input =
+            document.getElementById(
+                "messageInput"
+            );
+
+        input.addEventListener(
+            "focus",
+            function() {
+                openKeyboard(input);
+            }
+        );
 
         document
             .getElementById("sendMessage")
             .onclick = function() {
 
-                const message =
-                    document.getElementById(
-                        "message"
-                    ).value;
+                const value =
+                    input.value.trim();
 
-
-                document.getElementById(
-                    "messageResult"
-                ).textContent =
-                    "✓ Sent: " + message;
-
-            };
-
-    }
-
-
-    /* =====================================================
-       PHOTOS
-       ===================================================== */
-
-    else if (name === "Photos") {
-
-        appContent.innerHTML = `
-
-            <h3>Photos</h3>
-
-            <div class="photoGrid">
-
-                <div class="photo">🌴</div>
-                <div class="photo">🌊</div>
-                <div class="photo">🐶</div>
-                <div class="photo">🏖️</div>
-                <div class="photo">🌅</div>
-                <div class="photo">📸</div>
-
-            </div>
-
-            <button
-                id="addPhoto"
-                class="appButtonLarge"
-            >
-                Add Photo
-            </button>
-
-            <p id="photoResult"></p>
-
-        `;
-
-
-        document
-            .getElementById("addPhoto")
-            .onclick = function() {
-
-                document.getElementById(
-                    "photoResult"
-                ).textContent =
-                    "📸 Photo added!";
+                document
+                    .getElementById(
+                        "messageResult"
+                    )
+                    .textContent =
+                    value
+                    ? "✓ Sent: " + value
+                    : "Type something first!";
 
             };
 
@@ -605,22 +815,125 @@ function openApp(name) {
                 id="takePicture"
                 class="appButtonLarge"
             >
-                Take Picture
+                📸 Take Picture
             </button>
 
-            <p id="cameraResult"></p>
+            <button
+                id="flash"
+                class="appButtonLarge"
+            >
+                ⚡ Flash
+            </button>
+
+            <p
+                id="cameraResult"
+                style="text-align:center"
+            >
+                Camera ready
+            </p>
 
         `;
 
+        let pictures = 0;
 
         document
             .getElementById("takePicture")
             .onclick = function() {
 
-                document.getElementById(
-                    "cameraResult"
-                ).textContent =
-                    "📸 Picture taken!";
+                pictures++;
+
+                document
+                    .getElementById(
+                        "cameraResult"
+                    )
+                    .textContent =
+                    "📸 Picture " +
+                    pictures +
+                    " captured!";
+
+            };
+
+        document
+            .getElementById("flash")
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "cameraResult"
+                    )
+                    .textContent =
+                    "⚡ Flash ON";
+
+            };
+
+    }
+
+
+    /* =====================================================
+       PHOTOS
+       ===================================================== */
+
+    else if (name === "Photos") {
+
+        appContent.innerHTML = `
+
+            <h3>📸 My Photos</h3>
+
+            <div class="photoGrid">
+
+                <div class="photo">🌴</div>
+                <div class="photo">🌊</div>
+                <div class="photo">🐶</div>
+                <div class="photo">🏖️</div>
+                <div class="photo">🌅</div>
+                <div class="photo">📸</div>
+
+            </div>
+
+            <button
+                id="addPhoto"
+                class="appButtonLarge"
+            >
+                ➕ Add Photo
+            </button>
+
+            <button
+                id="shufflePhotos"
+                class="appButtonLarge"
+            >
+                🔀 Shuffle
+            </button>
+
+            <p
+                id="photoResult"
+                style="text-align:center"
+            ></p>
+
+        `;
+
+        document
+            .getElementById("addPhoto")
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "photoResult"
+                    )
+                    .textContent =
+                    "📸 New photo added!";
+
+            };
+
+        document
+            .getElementById("shufflePhotos")
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "photoResult"
+                    )
+                    .textContent =
+                    "🔀 Photos shuffled!";
 
             };
 
@@ -635,13 +948,21 @@ function openApp(name) {
 
         appContent.innerHTML = `
 
-            <div class="card">
+            <div
+                class="card"
+                style="text-align:center"
+            >
+                <div style="font-size:45px">
+                    ☀️
+                </div>
 
-                <h2>☀️ 72°F</h2>
+                <h2>72°F</h2>
 
                 <p>Sunny</p>
 
-                <p>Feels like 74°F</p>
+                <p>
+                    Feels like 74°F
+                </p>
 
             </div>
 
@@ -649,21 +970,29 @@ function openApp(name) {
                 id="refreshWeather"
                 class="appButtonLarge"
             >
-                Refresh
+                🔄 Refresh
             </button>
 
-            <p id="weatherResult"></p>
+            <p
+                id="weatherResult"
+                style="text-align:center"
+            >
+                Last updated now
+            </p>
 
         `;
 
-
         document
-            .getElementById("refreshWeather")
+            .getElementById(
+                "refreshWeather"
+            )
             .onclick = function() {
 
-                document.getElementById(
-                    "weatherResult"
-                ).textContent =
+                document
+                    .getElementById(
+                        "weatherResult"
+                    )
+                    .textContent =
                     "☀️ Weather updated!";
 
             };
@@ -682,7 +1011,7 @@ function openApp(name) {
             <input
                 id="mapSearch"
                 class="appInput"
-                placeholder="Search..."
+                placeholder="Where do you want to go?"
             >
 
             <div
@@ -696,34 +1025,47 @@ function openApp(name) {
                     font-size:40px;
                 "
             >
-                📍
+                🗺️
             </div>
 
             <button
                 id="findMap"
                 class="appButtonLarge"
             >
-                Search
+                📍 Find Location
             </button>
 
-            <p id="mapResult"></p>
+            <p
+                id="mapResult"
+                style="text-align:center"
+            ></p>
 
         `;
 
+        const input =
+            document.getElementById(
+                "mapSearch"
+            );
+
+        input.addEventListener(
+            "focus",
+            function() {
+                openKeyboard(input);
+            }
+        );
 
         document
             .getElementById("findMap")
             .onclick = function() {
 
                 const location =
-                    document.getElementById(
-                        "mapSearch"
-                    ).value;
+                    input.value.trim();
 
-
-                document.getElementById(
-                    "mapResult"
-                ).textContent =
+                document
+                    .getElementById(
+                        "mapResult"
+                    )
+                    .textContent =
                     "📍 " +
                     (
                         location ||
@@ -746,7 +1088,7 @@ function openApp(name) {
             <input
                 id="noteTitle"
                 class="appInput"
-                placeholder="Title"
+                placeholder="Note title"
             >
 
             <textarea
@@ -759,22 +1101,66 @@ function openApp(name) {
                 id="saveNote"
                 class="appButtonLarge"
             >
-                Save
+                💾 Save Note
             </button>
 
-            <p id="noteResult"></p>
+            <button
+                id="clearNote"
+                class="appButtonLarge"
+            >
+                🗑️ Clear
+            </button>
+
+            <p
+                id="noteResult"
+                style="text-align:center"
+            ></p>
 
         `;
 
+        const title =
+            document.getElementById(
+                "noteTitle"
+            );
+
+        const body =
+            document.getElementById(
+                "noteBody"
+            );
+
+        title.addEventListener(
+            "focus",
+            function() {
+                openKeyboard(title);
+            }
+        );
+
+        body.addEventListener(
+            "focus",
+            function() {
+                openKeyboard(body);
+            }
+        );
 
         document
             .getElementById("saveNote")
             .onclick = function() {
 
-                document.getElementById(
-                    "noteResult"
-                ).textContent =
+                document
+                    .getElementById(
+                        "noteResult"
+                    )
+                    .textContent =
                     "✓ Note saved!";
+
+            };
+
+        document
+            .getElementById("clearNote")
+            .onclick = function() {
+
+                title.value = "";
+                body.value = "";
 
             };
 
@@ -790,15 +1176,17 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div class="card">
-                <b>Wi-Fi</b>
-                <br>
-                Connected
+
+                <b>Wi-Fi</b><br>
+                🟢 Connected
+
             </div>
 
             <div class="card">
-                <b>Bluetooth</b>
-                <br>
-                On
+
+                <b>Bluetooth</b><br>
+                🔵 On
+
             </div>
 
             <div class="card">
@@ -817,6 +1205,13 @@ function openApp(name) {
 
             </div>
 
+            <div class="card">
+
+                <b>Battery</b><br>
+                🔋 87%
+
+            </div>
+
             <button
                 id="saveSettings"
                 class="appButtonLarge"
@@ -826,14 +1221,18 @@ function openApp(name) {
 
         `;
 
-
         document
-            .getElementById("saveSettings")
+            .getElementById(
+                "saveSettings"
+            )
             .onclick = function() {
 
-                alert(
-                    "Settings saved!"
-                );
+                document
+                    .getElementById(
+                        "saveSettings"
+                    )
+                    .textContent =
+                    "✓ Saved!";
 
             };
 
@@ -856,13 +1255,18 @@ function openApp(name) {
                 style="text-align:center"
             >
 
-                <div style="font-size:55px">
+                <div
+                    id="albumArt"
+                    style="font-size:55px"
+                >
                     🎵
                 </div>
 
                 <b>Pear Music</b>
 
-                <p>Nothing playing</p>
+                <p id="songName">
+                    Nothing playing
+                </p>
 
             </div>
 
@@ -874,37 +1278,82 @@ function openApp(name) {
             </button>
 
             <button
-                id="stop"
+                id="pause"
                 class="appButtonLarge"
             >
-                ■ Stop
+                ⏸ Pause
             </button>
 
-            <p id="musicResult"></p>
+            <button
+                id="nextSong"
+                class="appButtonLarge"
+            >
+                ⏭ Next
+            </button>
+
+            <p
+                id="musicResult"
+                style="text-align:center"
+            ></p>
 
         `;
 
+        const songs = [
+            "Pear Dreams",
+            "Midnight Drive",
+            "Summer Vibes",
+            "Electric Love"
+        ];
+
+        let song = 0;
 
         document
             .getElementById("play")
             .onclick = function() {
 
-                document.getElementById(
-                    "musicResult"
-                ).textContent =
-                    "▶ Playing music";
+                document
+                    .getElementById(
+                        "songName"
+                    )
+                    .textContent =
+                    songs[song];
+
+                document
+                    .getElementById(
+                        "musicResult"
+                    )
+                    .textContent =
+                    "▶ Playing";
 
             };
 
-
         document
-            .getElementById("stop")
+            .getElementById("pause")
             .onclick = function() {
 
-                document.getElementById(
-                    "musicResult"
-                ).textContent =
-                    "■ Music stopped";
+                document
+                    .getElementById(
+                        "musicResult"
+                    )
+                    .textContent =
+                    "⏸ Paused";
+
+            };
+
+        document
+            .getElementById("nextSong")
+            .onclick = function() {
+
+                song =
+                    (song + 1) %
+                    songs.length;
+
+                document
+                    .getElementById(
+                        "songName"
+                    )
+                    .textContent =
+                    songs[song];
 
             };
 
@@ -912,7 +1361,7 @@ function openApp(name) {
 
 
     /* =====================================================
-       CLOCK
+       CLOCK / CHRONO
        ===================================================== */
 
     else if (
@@ -935,27 +1384,27 @@ function openApp(name) {
                 id="updateTime"
                 class="appButtonLarge"
             >
-                Update Time
+                🔄 Update Time
             </button>
 
         `;
 
-
         function updateTime() {
 
-            document.getElementById(
-                "time"
-            ).textContent =
-                new Date().toLocaleTimeString();
+            document
+                .getElementById("time")
+                .textContent =
+                new Date()
+                    .toLocaleTimeString();
 
         }
 
-
         updateTime();
 
-
         document
-            .getElementById("updateTime")
+            .getElementById(
+                "updateTime"
+            )
             .onclick =
             updateTime;
 
@@ -970,39 +1419,76 @@ function openApp(name) {
 
         appContent.innerHTML = `
 
+            <div class="card">
+
+                <b>🌎 Lingo Translator</b>
+
+                <p>
+                    Type something below.
+                </p>
+
+            </div>
+
             <input
                 id="lingoWord"
                 class="appInput"
-                placeholder="Enter a word"
+                placeholder="Tap here to type..."
+                readonly
+                data-value=""
             >
 
             <button
                 id="translate"
                 class="appButtonLarge"
             >
-                Translate
+                🌎 Translate
             </button>
 
-            <p id="translation"></p>
+            <p
+                id="translation"
+                style="
+                    text-align:center;
+                    font-size:13px;
+                "
+            ></p>
 
         `;
 
+        const input =
+            document.getElementById(
+                "lingoWord"
+            );
+
+        input.addEventListener(
+            "pointerdown",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openKeyboard(input);
+
+            }
+        );
 
         document
-            .getElementById("translate")
+            .getElementById(
+                "translate"
+            )
             .onclick = function() {
 
                 const word =
-                    document.getElementById(
-                        "lingoWord"
-                    ).value;
+                    input.dataset.value ||
+                    "";
 
-
-                document.getElementById(
-                    "translation"
-                ).textContent =
-                    word +
-                    " → Hello";
+                document
+                    .getElementById(
+                        "translation"
+                    )
+                    .textContent =
+                    word
+                    ? word + " → Hello!"
+                    : "Type something first!";
 
             };
 
@@ -1010,48 +1496,152 @@ function openApp(name) {
 
 
     /* =====================================================
-       SPLASHFACE
+       SPLASH FACE
        ===================================================== */
 
     else if (name === "SplashFace") {
 
+        /*
+         * This app is deliberately built separately so
+         * it doesn't flash or immediately change.
+         */
+
+        appTitle.textContent =
+            "Splash Face";
+
         appContent.innerHTML = `
 
             <div
+                class="card"
                 style="
                     text-align:center;
-                    font-size:60px;
+                    padding:8px;
                 "
             >
-                😎
+
+                <div
+                    style="
+                        font-size:48px;
+                        margin-bottom:3px;
+                    "
+                >
+                    😎
+                </div>
+
+                <b>Splash Face</b>
+
+                <p>
+                    Share your mood.
+                </p>
+
             </div>
 
             <input
                 id="status"
                 class="appInput"
-                placeholder="Your status"
+                placeholder="What's happening?"
+                readonly
+                data-value=""
             >
 
             <button
-                id="setStatus"
+                id="happyFace"
                 class="appButtonLarge"
             >
-                Set Status
+                😄 Happy
             </button>
 
-            <p id="statusResult"></p>
+            <button
+                id="coolFace"
+                class="appButtonLarge"
+            >
+                😎 Cool
+            </button>
+
+            <button
+                id="sadFace"
+                class="appButtonLarge"
+            >
+                😢 Sad
+            </button>
+
+            <button
+                id="postStatus"
+                class="appButtonLarge"
+            >
+                📤 Post
+            </button>
+
+            <div
+                id="statusResult"
+                class="card"
+                style="text-align:center"
+            >
+                No status posted yet.
+            </div>
 
         `;
 
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+        status.addEventListener(
+            "pointerdown",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openKeyboard(status);
+
+            }
+        );
+
+        function setStatusEmoji(emoji) {
+
+            status.dataset.value =
+                emoji + " ";
+
+            openKeyboard(status);
+
+        }
 
         document
-            .getElementById("setStatus")
+            .getElementById("happyFace")
+            .onclick = function() {
+                setStatusEmoji("😄");
+            };
+
+        document
+            .getElementById("coolFace")
+            .onclick = function() {
+                setStatusEmoji("😎");
+            };
+
+        document
+            .getElementById("sadFace")
+            .onclick = function() {
+                setStatusEmoji("😢");
+            };
+
+        document
+            .getElementById("postStatus")
             .onclick = function() {
 
-                document.getElementById(
-                    "statusResult"
-                ).textContent =
-                    "Status updated!";
+                const value =
+                    status.dataset.value ||
+                    "";
+
+                document
+                    .getElementById(
+                        "statusResult"
+                    )
+                    .textContent =
+                    value
+                    ? "✨ Posted: " + value
+                    : "Type a status first!";
 
             };
 
@@ -1069,7 +1659,7 @@ function openApp(name) {
             <div
                 style="
                     text-align:center;
-                    font-size:65px;
+                    font-size:60px;
                 "
             >
                 👍
@@ -1079,7 +1669,7 @@ function openApp(name) {
                 id="thumb"
                 class="appButtonLarge"
             >
-                Thumbs Up
+                👍 Thumbs Up
             </button>
 
             <h2
@@ -1089,11 +1679,16 @@ function openApp(name) {
                 0
             </h2>
 
+            <p
+                id="thumbMessage"
+                style="text-align:center"
+            >
+                Give it a thumbs up!
+            </p>
+
         `;
 
-
         let count = 0;
-
 
         document
             .getElementById("thumb")
@@ -1101,11 +1696,21 @@ function openApp(name) {
 
                 count++;
 
-
-                document.getElementById(
-                    "thumbCount"
-                ).textContent =
+                document
+                    .getElementById(
+                        "thumbCount"
+                    )
+                    .textContent =
                     count;
+
+                document
+                    .getElementById(
+                        "thumbMessage"
+                    )
+                    .textContent =
+                    count >= 10
+                    ? "🔥 You're on fire!"
+                    : "👍 Nice!";
 
             };
 
@@ -1121,19 +1726,45 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div
-                style="
-                    text-align:center;
-                    font-size:60px;
-                "
+                class="card"
+                style="text-align:center"
             >
-                🌀
+
+                <div
+                    style="
+                        font-size:45px;
+                    "
+                >
+                    🌀
+                </div>
+
+                <b>DanWarp</b>
+
+                <p>
+                    Entertainment Center
+                </p>
+
             </div>
 
             <button
                 id="warp"
                 class="appButtonLarge"
             >
-                WARP
+                🌀 WARP
+            </button>
+
+            <button
+                id="shows"
+                class="appButtonLarge"
+            >
+                📺 Shows
+            </button>
+
+            <button
+                id="episodes"
+                class="appButtonLarge"
+            >
+                🎬 Episodes
             </button>
 
             <p
@@ -1145,15 +1776,42 @@ function openApp(name) {
 
         `;
 
-
         document
             .getElementById("warp")
             .onclick = function() {
 
-                document.getElementById(
-                    "warpResult"
-                ).textContent =
+                document
+                    .getElementById(
+                        "warpResult"
+                    )
+                    .textContent =
                     "🌀 WARP ACTIVATED!";
+
+            };
+
+        document
+            .getElementById("shows")
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "warpResult"
+                    )
+                    .textContent =
+                    "📺 Shows coming soon!";
+
+            };
+
+        document
+            .getElementById("episodes")
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "warpResult"
+                    )
+                    .textContent =
+                    "🎬 Episode library ready!";
 
             };
 
@@ -1172,22 +1830,62 @@ function openApp(name) {
                 class="card"
                 style="
                     text-align:center;
-                    font-size:60px;
+                    font-size:55px;
                 "
             >
                 🖼️
             </div>
 
             <button
+                id="selectImage"
                 class="appButtonLarge"
-                onclick="
-                    alert('Image selected!')
-                "
             >
-                Select Image
+                🖼️ Select Image
             </button>
 
+            <button
+                id="editImage"
+                class="appButtonLarge"
+            >
+                ✨ Edit Image
+            </button>
+
+            <p
+                id="imageResult"
+                style="text-align:center"
+            ></p>
+
         `;
+
+        document
+            .getElementById(
+                "selectImage"
+            )
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "imageResult"
+                    )
+                    .textContent =
+                    "🖼️ Image selected!";
+
+            };
+
+        document
+            .getElementById(
+                "editImage"
+            )
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "imageResult"
+                    )
+                    .textContent =
+                    "✨ Editing tools opened!";
+
+            };
 
     }
 
@@ -1203,36 +1901,63 @@ function openApp(name) {
             <input
                 id="zapSearchInput"
                 class="appInput"
-                placeholder="Search"
+                placeholder="Search ZapLook..."
+                readonly
+                data-value=""
             >
 
             <button
                 id="zapSearchButton"
                 class="appButtonLarge"
             >
-                Search
+                🔎 Search
             </button>
 
-            <p id="zapResult"></p>
+            <div
+                id="zapResult"
+                class="card"
+            >
+                Search for something.
+            </div>
 
         `;
 
+        const input =
+            document.getElementById(
+                "zapSearchInput"
+            );
+
+        input.addEventListener(
+            "pointerdown",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openKeyboard(input);
+
+            }
+        );
 
         document
-            .getElementById("zapSearchButton")
+            .getElementById(
+                "zapSearchButton"
+            )
             .onclick = function() {
 
                 const search =
-                    document.getElementById(
-                        "zapSearchInput"
-                    ).value;
+                    input.dataset.value ||
+                    "";
 
-
-                document.getElementById(
-                    "zapResult"
-                ).textContent =
-                    "Searching for: " +
-                    search;
+                document
+                    .getElementById(
+                        "zapResult"
+                    )
+                    .textContent =
+                    search
+                    ? "🔎 Searching for: " +
+                      search
+                    : "Type something first!";
 
             };
 
@@ -1248,9 +1973,10 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div
+                id="monkeyFace"
                 style="
                     text-align:center;
-                    font-size:70px;
+                    font-size:65px;
                 "
             >
                 🐒
@@ -1260,7 +1986,14 @@ function openApp(name) {
                 id="monkey"
                 class="appButtonLarge"
             >
-                Activate Monkey
+                🐒 Activate Monkey
+            </button>
+
+            <button
+                id="monkeyDance"
+                class="appButtonLarge"
+            >
+                💃 Monkey Dance
             </button>
 
             <p
@@ -1270,15 +2003,39 @@ function openApp(name) {
 
         `;
 
-
         document
             .getElementById("monkey")
             .onclick = function() {
 
-                document.getElementById(
-                    "monkeyResult"
-                ).textContent =
+                document
+                    .getElementById(
+                        "monkeyResult"
+                    )
+                    .textContent =
                     "🐒 OOO OOO AAH AAH!";
+
+            };
+
+        document
+            .getElementById(
+                "monkeyDance"
+            )
+            .onclick = function() {
+
+                const face =
+                    document.getElementById(
+                        "monkeyFace"
+                    );
+
+                face.textContent =
+                    "🕺🐒🕺";
+
+                document
+                    .getElementById(
+                        "monkeyResult"
+                    )
+                    .textContent =
+                    "🐒 MONKEY DANCE!";
 
             };
 
@@ -1303,22 +2060,254 @@ function openApp(name) {
                 id="saveRemark"
                 class="appButtonLarge"
             >
-                Save Remark
+                💾 Save Remark
             </button>
 
-            <p id="remarkResult"></p>
+            <button
+                id="clearRemark"
+                class="appButtonLarge"
+            >
+                🗑️ Clear
+            </button>
+
+            <p
+                id="remarkResult"
+                style="text-align:center"
+            ></p>
 
         `;
-
 
         document
             .getElementById("saveRemark")
             .onclick = function() {
 
+                const value =
+                    document.getElementById(
+                        "remark"
+                    ).value;
+
+                document
+                    .getElementById(
+                        "remarkResult"
+                    )
+                    .textContent =
+                    value
+                    ? "✓ Remark saved!"
+                    : "Write something first!";
+
+            };
+
+        document
+            .getElementById("clearRemark")
+            .onclick = function() {
+
                 document.getElementById(
-                    "remarkResult"
-                ).textContent =
-                    "✓ Remark saved!";
+                    "remark"
+                ).value = "";
+
+            };
+
+    }
+
+
+    /* =====================================================
+       STOCKS
+       ===================================================== */
+
+    else if (name === "Stocks") {
+
+        appContent.innerHTML = `
+
+            <div class="card">
+                <b>🍎 Pear Inc.</b>
+                <br><br>
+                $182.42
+                <br>
+                📈 +3.24%
+            </div>
+
+            <div class="card">
+                <b>💻 TechCo</b>
+                <br><br>
+                $94.18
+                <br>
+                📈 +1.82%
+            </div>
+
+            <button
+                id="refreshStocks"
+                class="appButtonLarge"
+            >
+                🔄 Refresh
+            </button>
+
+        `;
+
+        document
+            .getElementById(
+                "refreshStocks"
+            )
+            .onclick = function() {
+
+                this.textContent =
+                    "✓ Updated!";
+
+            };
+
+    }
+
+
+    /* =====================================================
+       SOCIAL FAST
+       ===================================================== */
+
+    else if (name === "Social Fast") {
+
+        appContent.innerHTML = `
+
+            <div class="card">
+                <b>🔥 Trending</b>
+                <p>
+                    #PearPhone
+                </p>
+            </div>
+
+            <div class="card">
+                <b>👤 Alex</b>
+                <p>
+                    This phone is crazy 😂
+                </p>
+            </div>
+
+            <input
+                id="socialPost"
+                class="appInput"
+                placeholder="What's on your mind?"
+                readonly
+                data-value=""
+            >
+
+            <button
+                id="postSocial"
+                class="appButtonLarge"
+            >
+                📤 Post
+            </button>
+
+            <p
+                id="socialResult"
+                style="text-align:center"
+            ></p>
+
+        `;
+
+        const input =
+            document.getElementById(
+                "socialPost"
+            );
+
+        input.addEventListener(
+            "pointerdown",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                openKeyboard(input);
+
+            }
+        );
+
+        document
+            .getElementById(
+                "postSocial"
+            )
+            .onclick = function() {
+
+                const value =
+                    input.dataset.value;
+
+                document
+                    .getElementById(
+                        "socialResult"
+                    )
+                    .textContent =
+                    value
+                    ? "🔥 Posted!"
+                    : "Write something first!";
+
+            };
+
+    }
+
+
+    /* =====================================================
+       VIDEOS
+       ===================================================== */
+
+    else if (name === "Videos") {
+
+        appContent.innerHTML = `
+
+            <div
+                class="card"
+                style="text-align:center"
+            >
+                🎬
+                <br><br>
+                Pear Videos
+            </div>
+
+            <button
+                id="featuredVideo"
+                class="appButtonLarge"
+            >
+                ▶ Featured
+            </button>
+
+            <button
+                id="randomVideo"
+                class="appButtonLarge"
+            >
+                🎲 Random Video
+            </button>
+
+            <p
+                id="videoResult"
+                style="text-align:center"
+            >
+                Choose a video.
+            </p>
+
+        `;
+
+        document
+            .getElementById(
+                "featuredVideo"
+            )
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "videoResult"
+                    )
+                    .textContent =
+                    "▶ Playing Featured Video";
+
+            };
+
+        document
+            .getElementById(
+                "randomVideo"
+            )
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "videoResult"
+                    )
+                    .textContent =
+                    "🎲 Random video selected!";
 
             };
 
@@ -1347,18 +2336,59 @@ function openApp(name) {
 
             <button
                 class="appButtonLarge"
-                onclick="
-                    alert('Button pressed!')
-                "
+                id="genericAction"
             >
-                Press Me
+                ✨ Open
             </button>
 
+            <p
+                id="genericResult"
+                style="text-align:center"
+            ></p>
+
         `;
+
+        document
+            .getElementById(
+                "genericAction"
+            )
+            .onclick = function() {
+
+                document
+                    .getElementById(
+                        "genericResult"
+                    )
+                    .textContent =
+                    "✓ Done!";
+
+            };
 
     }
 
 }
+
+
+/* =========================================================
+   PREVENT APP CONTENT FROM BECOMING PHONE SWIPES
+   ========================================================= */
+
+appWindow.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        event.stopPropagation();
+
+    }
+);
+
+appWindow.addEventListener(
+    "pointerup",
+    function(event) {
+
+        event.stopPropagation();
+
+    }
+);
 
 
 /* =========================================================
@@ -1369,9 +2399,21 @@ phoneArea.addEventListener(
     "pointerdown",
     function(event) {
 
-        /*
-         * Don't swipe when clicking an app.
-         */
+        if (
+            event.target.closest(
+                "#appWindow"
+            )
+        ) {
+            return;
+        }
+
+        if (
+            event.target.closest(
+                "#pearKeyboard"
+            )
+        ) {
+            return;
+        }
 
         if (
             event.target.classList &&
@@ -1379,26 +2421,16 @@ phoneArea.addEventListener(
                 "appButton"
             )
         ) {
-
             return;
-
         }
-
-
-        /*
-         * Don't swipe inside an app.
-         */
 
         if (
             event.target.closest(
-                "#appWindow"
+                "#pearHomeButton"
             )
         ) {
-
             return;
-
         }
-
 
         startX =
             event.clientX;
@@ -1424,9 +2456,7 @@ phoneArea.addEventListener(
             return;
         }
 
-
         swipeStarted = false;
-
 
         const endX =
             event.clientX;
@@ -1434,13 +2464,11 @@ phoneArea.addEventListener(
         const endY =
             event.clientY;
 
-
         const deltaX =
             endX - startX;
 
         const deltaY =
             endY - startY;
-
 
         const absX =
             Math.abs(deltaX);
@@ -1448,9 +2476,7 @@ phoneArea.addEventListener(
         const absY =
             Math.abs(deltaY);
 
-
-        const minimum =
-            60;
+        const minimum = 60;
 
 
         /* SIDE TO SIDE */
@@ -1495,7 +2521,6 @@ phoneArea.addEventListener(
 
             }
 
-
             /* SWIPE DOWN */
 
             else if (
@@ -1514,7 +2539,9 @@ phoneArea.addEventListener(
 
 
 /* =========================================================
-   START ON PAGE 1
+   INITIALIZE
    ========================================================= */
+
+createKeyboard();
 
 showPage1();
