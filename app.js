@@ -8,42 +8,31 @@
 const phoneArea =
     document.getElementById("phoneArea");
 
-
 const phoneImage =
     document.getElementById("phoneImage");
-
 
 const appWindow =
     document.getElementById("appWindow");
 
-
 const appTitle =
     document.getElementById("appTitle");
 
-
 const appContent =
     document.getElementById("appContent");
-
 
 const closeApp =
     document.getElementById("closeApp");
 
 
-const pageIndicator =
-    document.getElementById("pageIndicator");
-
-
 /* =========================================================
-   EXACT FILE NAMES
+   IMAGE FILES
    ========================================================= */
 
-const PAGE_1 =
+const PAGE1 =
     "pearphone.png";
 
-
-const PAGE_2 =
+const PAGE2 =
     "pearphonepage2.png";
-
 
 const SLAP =
     "theslap.png";
@@ -53,7 +42,8 @@ const SLAP =
    CURRENT SCREEN
    ========================================================= */
 
-let currentScreen = "page1";
+let currentScreen =
+    "page1";
 
 
 /* =========================================================
@@ -64,32 +54,40 @@ let startX = 0;
 
 let startY = 0;
 
-let swiping = false;
+let swipeActive = false;
 
 
 /* =========================================================
-   REMOVE OLD APP BUTTONS
+   CLOSE APP
    ========================================================= */
 
-function removeAppButtons() {
+closeApp.addEventListener(
+    "click",
+    function(event) {
 
-    const buttons =
-        document.querySelectorAll(".appButton");
+        event.stopPropagation();
+
+        closeCurrentApp();
+
+    }
+);
 
 
-    buttons.forEach(
-        function(button) {
+/* =========================================================
+   CLOSE CURRENT APP
+   ========================================================= */
 
-            button.remove();
+function closeCurrentApp() {
 
-        }
-    );
+    appWindow.classList.remove("open");
+
+    appContent.innerHTML = "";
 
 }
 
 
 /* =========================================================
-   CREATE AN INVISIBLE CLICKABLE APP
+   CREATE INVISIBLE APP BUTTON
    ========================================================= */
 
 function createAppButton(
@@ -104,7 +102,8 @@ function createAppButton(
         document.createElement("button");
 
 
-    button.type = "button";
+    button.type =
+        "button";
 
 
     button.className =
@@ -116,15 +115,6 @@ function createAppButton(
         name
     );
 
-
-    /*
-     * These coordinates are percentages
-     * of the ORIGINAL PHONE IMAGE.
-     *
-     * Because the button is inside the
-     * same container as the image, it
-     * rotates with the image.
-     */
 
     button.style.left =
         left + "%";
@@ -153,16 +143,6 @@ function createAppButton(
 
 
     button.addEventListener(
-        "pointerup",
-        function(event) {
-
-            event.stopPropagation();
-
-        }
-    );
-
-
-    button.addEventListener(
         "click",
         function(event) {
 
@@ -180,6 +160,25 @@ function createAppButton(
 
 
 /* =========================================================
+   REMOVE ALL APP BUTTONS
+   ========================================================= */
+
+function removeAppButtons() {
+
+    document
+        .querySelectorAll(".appButton")
+        .forEach(
+            function(button) {
+
+                button.remove();
+
+            }
+        );
+
+}
+
+
+/* =========================================================
    PAGE 1
    ========================================================= */
 
@@ -189,19 +188,18 @@ function showPage1() {
         "page1";
 
 
+    closeCurrentApp();
+
+
     phoneImage.src =
-        PAGE_1;
-
-
-    pageIndicator.textContent =
-        "Page 1";
+        PAGE1;
 
 
     removeAppButtons();
 
 
     /*
-     * These are the apps in pearphone.png.
+     * PAGE 1 APPS
      */
 
     createAppButton(
@@ -324,19 +322,18 @@ function showPage2() {
         "page2";
 
 
+    closeCurrentApp();
+
+
     phoneImage.src =
-        PAGE_2;
-
-
-    pageIndicator.textContent =
-        "Page 2";
+        PAGE2;
 
 
     removeAppButtons();
 
 
     /*
-     * These are the apps in pearphonepage2.png.
+     * PAGE 2 APPS
      */
 
     createAppButton(
@@ -450,7 +447,7 @@ function showPage2() {
 
 
 /* =========================================================
-   THE SLAP
+   SLAP
    ========================================================= */
 
 function showSlap() {
@@ -459,12 +456,11 @@ function showSlap() {
         "slap";
 
 
+    closeCurrentApp();
+
+
     phoneImage.src =
         SLAP;
-
-
-    pageIndicator.textContent =
-        "TheSlap";
 
 
     removeAppButtons();
@@ -482,7 +478,8 @@ function openApp(name) {
         name;
 
 
-    appContent.innerHTML = "";
+    appContent.innerHTML =
+        "";
 
 
     appWindow.classList.add(
@@ -499,29 +496,32 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div class="card">
-                <strong>Alex</strong>
-                <p>Hey! What are you doing?</p>
+                <b>Alex</b>
+                <br>
+                Hey! What are you doing?
             </div>
 
             <div class="card">
-                <strong>Mom</strong>
-                <p>Don't forget about dinner!</p>
+                <b>Mom</b>
+                <br>
+                Don't forget dinner!
             </div>
 
-            <input
-                class="appInput"
-                id="messageInput"
-                placeholder="Type a message..."
-            >
+            <textarea
+                id="message"
+                class="appTextarea"
+                placeholder="Message..."
+            ></textarea>
 
             <button
-                class="appAction"
                 id="sendMessage"
+                class="appButtonLarge"
             >
                 Send
             </button>
 
-            <div id="messageResult"></div>
+            <p id="messageResult"></p>
+
         `;
 
 
@@ -529,19 +529,16 @@ function openApp(name) {
             .getElementById("sendMessage")
             .onclick = function() {
 
-                const text =
+                const message =
                     document.getElementById(
-                        "messageInput"
+                        "message"
                     ).value;
 
 
                 document.getElementById(
                     "messageResult"
-                ).innerHTML =
-                    "<div class='card'>" +
-                    "✓ Message sent: " +
-                    escapeHTML(text) +
-                    "</div>";
+                ).textContent =
+                    "✓ Sent: " + message;
 
             };
 
@@ -575,8 +572,8 @@ function openApp(name) {
             </div>
 
             <button
-                class="appAction"
-                id="newPhoto"
+                id="addPhoto"
+                class="appButtonLarge"
             >
                 Add Photo
             </button>
@@ -587,13 +584,13 @@ function openApp(name) {
 
 
         document
-            .getElementById("newPhoto")
+            .getElementById("addPhoto")
             .onclick = function() {
 
                 document.getElementById(
                     "photoResult"
                 ).textContent =
-                    "📸 New photo added!";
+                    "📸 Photo added!";
 
             };
 
@@ -612,16 +609,16 @@ function openApp(name) {
                 class="card"
                 style="
                     text-align:center;
-                    font-size:60px;
-                    padding:30px;
+                    font-size:55px;
+                    padding:25px;
                 "
             >
                 📷
             </div>
 
             <button
-                class="appAction"
                 id="takePicture"
+                class="appButtonLarge"
             >
                 Take Picture
             </button>
@@ -654,16 +651,26 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div class="card">
-                <h2>☀️ 72°F</h2>
-                <p>Sunny</p>
-                <p>Feels like 74°F</p>
+
+                <h2>
+                    ☀️ 72°F
+                </h2>
+
+                <p>
+                    Sunny
+                </p>
+
+                <p>
+                    Feels like 74°F
+                </p>
+
             </div>
 
             <button
-                class="appAction"
                 id="refreshWeather"
+                class="appButtonLarge"
             >
-                Refresh Weather
+                Refresh
             </button>
 
             <p id="weatherResult"></p>
@@ -672,13 +679,15 @@ function openApp(name) {
 
 
         document
-            .getElementById("refreshWeather")
+            .getElementById(
+                "refreshWeather"
+            )
             .onclick = function() {
 
                 document.getElementById(
                     "weatherResult"
                 ).textContent =
-                    "Weather refreshed! ☀️";
+                    "☀️ Weather updated!";
 
             };
 
@@ -694,28 +703,28 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <input
+                id="mapSearch"
                 class="appInput"
-                id="mapInput"
-                placeholder="Search location..."
+                placeholder="Search..."
             >
 
             <div
                 class="card"
                 style="
-                    height:140px;
-                    background:#80c8ff;
+                    height:100px;
+                    background:#83c9ff;
                     display:flex;
                     align-items:center;
                     justify-content:center;
-                    font-size:50px;
+                    font-size:40px;
                 "
             >
                 📍
             </div>
 
             <button
-                class="appAction"
-                id="mapSearch"
+                id="findMap"
+                class="appButtonLarge"
             >
                 Search
             </button>
@@ -726,12 +735,12 @@ function openApp(name) {
 
 
         document
-            .getElementById("mapSearch")
+            .getElementById("findMap")
             .onclick = function() {
 
-                const place =
+                const location =
                     document.getElementById(
-                        "mapInput"
+                        "mapSearch"
                     ).value;
 
 
@@ -740,7 +749,7 @@ function openApp(name) {
                 ).textContent =
                     "📍 " +
                     (
-                        place ||
+                        location ||
                         "Current location"
                     );
 
@@ -758,26 +767,25 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <input
-                class="appInput"
                 id="noteTitle"
-                placeholder="Note title"
+                class="appInput"
+                placeholder="Title"
             >
 
             <textarea
-                class="appInput"
-                id="noteText"
-                style="height:100px"
-                placeholder="Write your note..."
+                id="noteBody"
+                class="appTextarea"
+                placeholder="Write something..."
             ></textarea>
 
             <button
-                class="appAction"
                 id="saveNote"
+                class="appButtonLarge"
             >
-                Save Note
+                Save
             </button>
 
-            <div id="noteResult"></div>
+            <p id="noteResult"></p>
 
         `;
 
@@ -788,8 +796,67 @@ function openApp(name) {
 
                 document.getElementById(
                     "noteResult"
-                ).innerHTML =
-                    "<div class='card'>✓ Note saved!</div>";
+                ).textContent =
+                    "✓ Note saved!";
+
+            };
+
+    }
+
+
+    /* =====================================================
+       SETTINGS
+       ===================================================== */
+
+    else if (name === "Settings") {
+
+        appContent.innerHTML = `
+
+            <div class="card">
+                <b>Wi-Fi</b>
+                <br>
+                Connected
+            </div>
+
+            <div class="card">
+                <b>Bluetooth</b>
+                <br>
+                On
+            </div>
+
+            <div class="card">
+
+                <b>Brightness</b>
+
+                <br><br>
+
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="80"
+                    style="width:100%"
+                >
+
+            </div>
+
+            <button
+                id="saveSettings"
+                class="appButtonLarge"
+            >
+                Save Settings
+            </button>
+
+        `;
+
+
+        document
+            .getElementById("saveSettings")
+            .onclick = function() {
+
+                alert(
+                    "Settings saved!"
+                );
 
             };
 
@@ -814,33 +881,32 @@ function openApp(name) {
 
                 <div
                     style="
-                        font-size:70px;
-                        margin:15px;
+                        font-size:55px;
                     "
                 >
                     🎵
                 </div>
 
-                <h3>
+                <b>
                     Pear Music
-                </h3>
+                </b>
 
                 <p>
-                    Now Playing
+                    Nothing playing
                 </p>
 
             </div>
 
             <button
-                class="appAction"
-                id="playMusic"
+                id="play"
+                class="appButtonLarge"
             >
                 ▶ Play
             </button>
 
             <button
-                class="appAction"
-                id="stopMusic"
+                id="stop"
+                class="appButtonLarge"
             >
                 ■ Stop
             </button>
@@ -851,25 +917,25 @@ function openApp(name) {
 
 
         document
-            .getElementById("playMusic")
+            .getElementById("play")
             .onclick = function() {
 
                 document.getElementById(
                     "musicResult"
                 ).textContent =
-                    "▶ Playing";
+                    "▶ Playing music";
 
             };
 
 
         document
-            .getElementById("stopMusic")
+            .getElementById("stop")
             .onclick = function() {
 
                 document.getElementById(
                     "musicResult"
                 ).textContent =
-                    "■ Stopped";
+                    "■ Music stopped";
 
             };
 
@@ -877,7 +943,7 @@ function openApp(name) {
 
 
     /* =====================================================
-       CLOCK / CHRONO
+       CLOCK
        ===================================================== */
 
     else if (
@@ -888,19 +954,18 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div
-                id="clockDisplay"
+                id="time"
                 style="
+                    font-size:30px;
                     text-align:center;
-                    font-size:38px;
-                    margin:25px 0;
+                    margin:15px;
                 "
             >
-                --:--
             </div>
 
             <button
-                class="appAction"
-                id="refreshClock"
+                id="updateTime"
+                class="appButtonLarge"
             >
                 Update Time
             </button>
@@ -908,122 +973,70 @@ function openApp(name) {
         `;
 
 
-        function updateClock() {
-
-            const now =
-                new Date();
-
+        function updateTime() {
 
             document.getElementById(
-                "clockDisplay"
+                "time"
             ).textContent =
-                now.toLocaleTimeString();
+                new Date().toLocaleTimeString();
 
         }
 
 
-        updateClock();
+        updateTime();
 
 
         document
-            .getElementById("refreshClock")
+            .getElementById(
+                "updateTime"
+            )
             .onclick =
-            updateClock;
+            updateTime;
 
     }
 
 
     /* =====================================================
-       SETTINGS
-       ===================================================== */
-
-    else if (name === "Settings") {
-
-        appContent.innerHTML = `
-
-            <div class="card">
-                <strong>Wi-Fi</strong>
-                <p>Connected</p>
-            </div>
-
-            <div class="card">
-                <strong>Bluetooth</strong>
-                <p>On</p>
-            </div>
-
-            <div class="card">
-                <strong>Brightness</strong>
-
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value="80"
-                    style="width:100%"
-                >
-
-            </div>
-
-            <button
-                class="appAction"
-                onclick="
-                    alert('Settings saved!')
-                "
-            >
-                Save Settings
-            </button>
-
-        `;
-
-    }
-
-
-    /* =====================================================
-       PAGE 2: LINGO
+       LINGO
        ===================================================== */
 
     else if (name === "Lingo") {
 
         appContent.innerHTML = `
 
-            <h3>Lingo</h3>
-
             <input
+                id="lingoWord"
                 class="appInput"
-                id="lingoInput"
-                placeholder="Type a word..."
+                placeholder="Enter a word"
             >
 
             <button
-                class="appAction"
-                id="translateButton"
+                id="translate"
+                class="appButtonLarge"
             >
                 Translate
             </button>
 
-            <div id="lingoResult"></div>
+            <p id="translation"></p>
 
         `;
 
 
         document
-            .getElementById("translateButton")
+            .getElementById("translate")
             .onclick = function() {
 
                 const word =
                     document.getElementById(
-                        "lingoInput"
+                        "lingoWord"
                     ).value;
 
 
                 document.getElementById(
-                    "lingoResult"
-                ).innerHTML =
-                    "<div class='card'>" +
-                    "Translation: " +
-                    escapeHTML(word) +
-                    " → Hello" +
-                    "</div>";
+                    "translation"
+                ).textContent =
+                    word +
+                    " → Hello";
 
             };
 
@@ -1039,7 +1052,6 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div
-                class="card"
                 style="
                     text-align:center;
                     font-size:60px;
@@ -1049,29 +1061,29 @@ function openApp(name) {
             </div>
 
             <input
+                id="status"
                 class="appInput"
-                placeholder="Your status..."
-                id="faceStatus"
+                placeholder="Your status"
             >
 
             <button
-                class="appAction"
-                id="updateFace"
+                id="setStatus"
+                class="appButtonLarge"
             >
-                Update Face
+                Set Status
             </button>
 
-            <p id="faceResult"></p>
+            <p id="statusResult"></p>
 
         `;
 
 
         document
-            .getElementById("updateFace")
+            .getElementById("setStatus")
             .onclick = function() {
 
                 document.getElementById(
-                    "faceResult"
+                    "statusResult"
                 ).textContent =
                     "Status updated!";
 
@@ -1091,17 +1103,17 @@ function openApp(name) {
             <div
                 style="
                     text-align:center;
-                    font-size:90px;
+                    font-size:65px;
                 "
             >
                 👍
             </div>
 
             <button
-                class="appAction"
-                id="thumbButton"
+                id="thumb"
+                class="appButtonLarge"
             >
-                Give a Thumbs Up
+                Thumbs Up
             </button>
 
             <h2
@@ -1118,7 +1130,7 @@ function openApp(name) {
 
 
         document
-            .getElementById("thumbButton")
+            .getElementById("thumb")
             .onclick = function() {
 
                 count++;
@@ -1143,20 +1155,19 @@ function openApp(name) {
         appContent.innerHTML = `
 
             <div
-                class="card"
                 style="
                     text-align:center;
-                    font-size:45px;
+                    font-size:60px;
                 "
             >
                 🌀
             </div>
 
             <button
-                class="appAction"
-                id="warpButton"
+                id="warp"
+                class="appButtonLarge"
             >
-                WARP!
+                WARP
             </button>
 
             <p
@@ -1170,7 +1181,7 @@ function openApp(name) {
 
 
         document
-            .getElementById("warpButton")
+            .getElementById("warp")
             .onclick = function() {
 
                 document.getElementById(
@@ -1194,18 +1205,15 @@ function openApp(name) {
             <div
                 class="card"
                 style="
-                    height:150px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:70px;
+                    text-align:center;
+                    font-size:60px;
                 "
             >
                 🖼️
             </div>
 
             <button
-                class="appAction"
+                class="appButtonLarge"
                 onclick="
                     alert('Image selected!')
                 "
@@ -1226,24 +1234,15 @@ function openApp(name) {
 
         appContent.innerHTML = `
 
-            <div
-                style="
-                    text-align:center;
-                    font-size:70px;
-                "
-            >
-                🔍
-            </div>
-
             <input
+                id="zapSearchInput"
                 class="appInput"
-                id="zapInput"
-                placeholder="Search..."
+                placeholder="Search"
             >
 
             <button
-                class="appAction"
-                id="zapSearch"
+                id="zapSearchButton"
+                class="appButtonLarge"
             >
                 Search
             </button>
@@ -1254,12 +1253,14 @@ function openApp(name) {
 
 
         document
-            .getElementById("zapSearch")
+            .getElementById(
+                "zapSearchButton"
+            )
             .onclick = function() {
 
-                const query =
+                const search =
                     document.getElementById(
-                        "zapInput"
+                        "zapSearchInput"
                     ).value;
 
 
@@ -1267,7 +1268,7 @@ function openApp(name) {
                     "zapResult"
                 ).textContent =
                     "Searching for: " +
-                    query;
+                    search;
 
             };
 
@@ -1285,17 +1286,17 @@ function openApp(name) {
             <div
                 style="
                     text-align:center;
-                    font-size:80px;
+                    font-size:70px;
                 "
             >
                 🐒
             </div>
 
             <button
-                class="appAction"
-                id="monkeyButton"
+                id="monkey"
+                class="appButtonLarge"
             >
-                Make Monkey Do Something
+                Activate Monkey
             </button>
 
             <p
@@ -1307,30 +1308,13 @@ function openApp(name) {
 
 
         document
-            .getElementById("monkeyButton")
+            .getElementById("monkey")
             .onclick = function() {
-
-                const sounds = [
-                    "🐒 OOO OOO AAH AAH!",
-                    "🐒 Monkey activated!",
-                    "🐒 Banana time!",
-                    "🐒 EEEEEEE!"
-                ];
-
-
-                const random =
-                    sounds[
-                        Math.floor(
-                            Math.random() *
-                            sounds.length
-                        )
-                    ];
-
 
                 document.getElementById(
                     "monkeyResult"
                 ).textContent =
-                    random;
+                    "🐒 OOO OOO AAH AAH!";
 
             };
 
@@ -1345,18 +1329,15 @@ function openApp(name) {
 
         appContent.innerHTML = `
 
-            <h3>Remark</h3>
-
             <textarea
-                class="appInput"
-                id="remarkInput"
-                style="height:100px"
+                id="remark"
+                class="appTextarea"
                 placeholder="Write a remark..."
             ></textarea>
 
             <button
-                class="appAction"
                 id="saveRemark"
+                class="appButtonLarge"
             >
                 Save Remark
             </button>
@@ -1367,7 +1348,9 @@ function openApp(name) {
 
 
         document
-            .getElementById("saveRemark")
+            .getElementById(
+                "saveRemark"
+            )
             .onclick = function() {
 
                 document.getElementById(
@@ -1381,7 +1364,7 @@ function openApp(name) {
 
 
     /* =====================================================
-       DEFAULT FOR OTHER APPS
+       DEFAULT
        ===================================================== */
 
     else {
@@ -1391,17 +1374,17 @@ function openApp(name) {
             <div class="card">
 
                 <h3>
-                    ${escapeHTML(name)}
+                    ${name}
                 </h3>
 
                 <p>
-                    Welcome to ${escapeHTML(name)}.
+                    Welcome to ${name}.
                 </p>
 
             </div>
 
             <button
-                class="appAction"
+                class="appButtonLarge"
                 onclick="
                     alert('Button pressed!')
                 "
@@ -1417,22 +1400,6 @@ function openApp(name) {
 
 
 /* =========================================================
-   ESCAPE TEXT
-   ========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================================
    SWIPE START
    ========================================================= */
 
@@ -1442,14 +1409,30 @@ phoneArea.addEventListener(
 
 
         /*
-         * Don't start a swipe when an app
-         * button is being pressed.
+         * Don't start a page swipe when
+         * touching an app icon.
          */
 
         if (
             event.target.classList &&
             event.target.classList.contains(
                 "appButton"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * Don't start a page swipe inside
+         * the app window.
+         */
+
+        if (
+            event.target.closest(
+                "#appWindow"
             )
         ) {
 
@@ -1466,7 +1449,7 @@ phoneArea.addEventListener(
             event.clientY;
 
 
-        swiping = true;
+        swipeActive = true;
 
     }
 );
@@ -1481,14 +1464,14 @@ phoneArea.addEventListener(
     function(event) {
 
 
-        if (!swiping) {
+        if (!swipeActive) {
 
             return;
 
         }
 
 
-        swiping = false;
+        swipeActive = false;
 
 
         const endX =
@@ -1515,17 +1498,17 @@ phoneArea.addEventListener(
             Math.abs(deltaY);
 
 
-        const minimum =
+        const minimumSwipe =
             60;
 
 
         /*
-         * HORIZONTAL SWIPE
+         * SIDEWAYS
          */
 
         if (
             horizontal > vertical &&
-            horizontal >= minimum
+            horizontal >= minimumSwipe
         ) {
 
 
@@ -1550,17 +1533,17 @@ phoneArea.addEventListener(
 
 
         /*
-         * VERTICAL SWIPE
+         * UP / DOWN
          */
 
         if (
             vertical > horizontal &&
-            vertical >= minimum
+            vertical >= minimumSwipe
         ) {
 
 
             /*
-             * UP
+             * SWIPE UP
              */
 
             if (
@@ -1574,7 +1557,7 @@ phoneArea.addEventListener(
 
 
             /*
-             * DOWN
+             * SWIPE DOWN
              */
 
             else if (
