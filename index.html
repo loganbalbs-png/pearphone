@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,
-          maximum-scale=1.0, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pear Phone</title>
 
     <style>
@@ -16,126 +13,88 @@
         html,
         body {
             margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #ffffff;
+            background: white;
+            font-family: Arial, sans-serif;
             touch-action: none;
         }
 
         body {
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
-        /*
-         * This is the actual phone picture.
-         * It stays vertical, centered and large.
-         */
+        /* The picture itself */
         #phone {
             position: relative;
-
-            width: min(90vw, 83vh);
-            height: min(90vw, 83vh);
-
-            flex-shrink: 0;
-
-            touch-action: none;
+            width: min(92vw, 92vh);
+            height: min(92vw, 92vh);
         }
 
         #phoneImage {
             position: absolute;
-
             width: 100%;
             height: 100%;
-
             object-fit: contain;
-
-            transform: scale(1.15);
-
+            display: block;
             user-select: none;
             -webkit-user-drag: none;
-
             pointer-events: none;
         }
 
-        /*
-         * Invisible clickable areas.
-         * These sit directly ON TOP of the apps
-         * in the picture.
-         */
-        .appButton {
+        /* Invisible buttons placed over the picture */
+        .app {
             position: absolute;
-
             border: 0;
+            background: transparent;
             padding: 0;
             margin: 0;
-
-            background: transparent;
-
-            z-index: 5;
-
+            z-index: 10;
             cursor: pointer;
-
-            touch-action: manipulation;
         }
 
-        /*
-         * App screen
-         */
-        #appScreen {
+        /* App opened screen */
+        #app {
             position: fixed;
             inset: 0;
-
             z-index: 100;
-
             display: none;
-
-            background: #087ee8;
-
+            background: #087fe8;
             color: white;
-
-            font-family: Arial, sans-serif;
-
+            text-align: center;
             align-items: center;
             justify-content: center;
             flex-direction: column;
         }
 
-        #appScreen.open {
+        #app.open {
             display: flex;
         }
 
-        #appTitle {
-            font-size: 42px;
-            margin: 0 0 10px;
+        #app h1 {
+            font-size: 48px;
+            margin: 0 0 15px;
         }
 
-        #appText {
-            font-size: 20px;
+        #app p {
+            font-size: 22px;
+            margin: 0;
         }
 
-        #backButton {
+        #back {
             position: absolute;
-
             top: 20px;
             left: 20px;
-
-            width: 52px;
-            height: 52px;
-
+            width: 55px;
+            height: 55px;
             border: 0;
             border-radius: 50%;
-
-            background: rgba(0, 0, 0, 0.65);
-
+            background: rgba(0,0,0,.65);
             color: white;
-
-            font-size: 34px;
-
-            cursor: pointer;
+            font-size: 35px;
         }
     </style>
 </head>
@@ -144,7 +103,6 @@
 
     <div id="phone">
 
-        <!-- THIS IS THE ACTUAL PEAR PHONE PICTURE -->
         <img
             id="phoneImage"
             src="pearphone.png"
@@ -153,17 +111,15 @@
 
     </div>
 
+    <div id="app">
 
-    <div id="appScreen">
+        <button id="back" type="button">‹</button>
 
-        <button id="backButton">‹</button>
+        <h1 id="appName"></h1>
 
-        <h1 id="appTitle"></h1>
-
-        <div id="appText"></div>
+        <p id="appDescription"></p>
 
     </div>
-
 
     <script src="app.js"></script>
 
