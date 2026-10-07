@@ -46,9 +46,6 @@
 
             flex-shrink: 0;
 
-            /*
-             * Sideways Pear Phone + zoom
-             */
             transform: rotate(90deg) scale(1.28);
 
             transform-origin: center center;
@@ -103,6 +100,31 @@
         .appButton:active {
             background: rgba(255, 255, 255, 0.20);
             border-radius: 50%;
+        }
+
+        /* =====================================================
+           BLACK PEAR PHONE HOME BUTTON
+           This sits over the EXISTING black button in your PNG.
+           It is invisible, so it does not change the phone.
+           ===================================================== */
+
+        #pearHomeButton {
+            position: absolute;
+
+            left: 42%;
+            top: 76%;
+
+            width: 16%;
+            height: 10%;
+
+            border: none;
+            background: transparent;
+
+            z-index: 300;
+
+            cursor: pointer;
+
+            touch-action: manipulation;
         }
 
         /* =====================================================
@@ -172,7 +194,7 @@
         }
 
         /* =====================================================
-           BLACK PEAR BUTTON
+           HEADER CLOSE BUTTON
            ===================================================== */
 
         #closeApp {
@@ -310,18 +332,175 @@
             font-size: 20px;
         }
 
+        /* =====================================================
+           KEYBOARD
+           ===================================================== */
+
+        #pearKeyboard {
+            position: absolute;
+
+            left: 3%;
+            right: 3%;
+            bottom: 3%;
+
+            z-index: 500;
+
+            display: none;
+
+            padding: 5px;
+
+            background: #202020;
+
+            border: 2px solid #000;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,.55);
+
+            touch-action: manipulation;
+        }
+
+        #pearKeyboard.open {
+            display: block;
+        }
+
+        .keyboardRow {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 3px;
+        }
+
+        .keyboardRow:last-child {
+            margin-bottom: 0;
+        }
+
+        .key {
+            flex: 1;
+
+            min-width: 0;
+
+            height: 25px;
+
+            padding: 0;
+
+            border: 1px solid #777;
+
+            border-radius: 4px;
+
+            background: linear-gradient(
+                #eeeeee,
+                #bdbdbd
+            );
+
+            color: #111;
+
+            font-size: 9px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            touch-action: manipulation;
+        }
+
+        .key:active {
+            background: #888;
+            color: white;
+        }
+
+        .key.space {
+            flex: 4;
+        }
+
+        .key.enter {
+            flex: 2;
+        }
+
+        .key.backspace {
+            flex: 1.5;
+        }
+
+        /* =====================================================
+           LINGO / SLAP TEXT BAR
+           ===================================================== */
+
+        .pearTypingBar {
+            width: 100%;
+
+            min-height: 30px;
+
+            padding: 6px 8px;
+
+            border: 1px solid #777;
+
+            border-radius: 6px;
+
+            background: white;
+
+            color: #111;
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+        }
+
+        .pearTypingBar.placeholder {
+            color: #777;
+        }
+
+        /* =====================================================
+           SLAP TEXT BAR
+           ===================================================== */
+
+        #slapTypingArea {
+            position: absolute;
+
+            left: 25%;
+            top: 35%;
+
+            width: 50%;
+
+            z-index: 150;
+
+            display: none;
+        }
+
+        #slapTypingArea.open {
+            display: block;
+        }
+
+        #slapTextBar {
+            width: 100%;
+
+            min-height: 34px;
+
+            border: 2px solid #222;
+
+            border-radius: 7px;
+
+            background: rgba(255,255,255,.96);
+
+            padding: 7px;
+
+            font-size: 12px;
+
+            color: #111;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+        }
+
     </style>
 </head>
 
 <body>
 
-    <!-- =====================================================
-         PEAR PHONE
-         ===================================================== -->
-
     <div id="phoneArea">
-
-        <!-- YOUR ACTUAL IMAGE -->
 
         <img
             id="phoneImage"
@@ -330,9 +509,24 @@
             draggable="false"
         >
 
+        <!-- EXISTING BLACK PEAR PHONE BUTTON -->
+        <button
+            id="pearHomeButton"
+            type="button"
+            aria-label="Pear Phone Home"
+        ></button>
+
+        <!-- SLAP TEXT BAR -->
+        <div id="slapTypingArea">
+            <div
+                id="slapTextBar"
+                class="pearTypingBar placeholder"
+            >
+                Tap here to type...
+            </div>
+        </div>
 
         <!-- APP TAB -->
-
         <div id="appWindow">
 
             <div id="appHeader">
@@ -340,8 +534,6 @@
                 <span id="appTitle">
                     App
                 </span>
-
-                <!-- BLACK BUTTON TO EXIT APP -->
 
                 <button
                     id="closeApp"
@@ -357,8 +549,10 @@
 
         </div>
 
-    </div>
+        <!-- KEYBOARD -->
+        <div id="pearKeyboard"></div>
 
+    </div>
 
     <script src="app.js"></script>
 
