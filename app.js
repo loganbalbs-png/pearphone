@@ -25,25 +25,21 @@ const closeApp =
 
 
 /* =========================================================
-   IMAGE FILES
+   YOUR EXACT FILE NAMES
    ========================================================= */
 
-const PAGE1 =
-    "pearphone.png";
+const PAGE1 = "pearphone.png";
 
-const PAGE2 =
-    "pearphonepage2.png";
+const PAGE2 = "pearphonepage2.png";
 
-const SLAP =
-    "theslap.png";
+const SLAP = "theslap.png";
 
 
 /* =========================================================
-   CURRENT SCREEN
+   CURRENT PAGE
    ========================================================= */
 
-let currentScreen =
-    "page1";
+let currentPage = "page1";
 
 
 /* =========================================================
@@ -51,46 +47,47 @@ let currentScreen =
    ========================================================= */
 
 let startX = 0;
-
 let startY = 0;
-
-let swipeActive = false;
+let swipeStarted = false;
 
 
 /* =========================================================
    CLOSE APP
    ========================================================= */
 
-closeApp.addEventListener(
-    "click",
-    function(event) {
+closeApp.addEventListener("click", function(event) {
 
-        event.stopPropagation();
-
-        closeCurrentApp();
-
-    }
-);
-
-
-/* =========================================================
-   CLOSE CURRENT APP
-   ========================================================= */
-
-function closeCurrentApp() {
+    event.stopPropagation();
 
     appWindow.classList.remove("open");
 
     appContent.innerHTML = "";
 
+});
+
+
+/* =========================================================
+   REMOVE APP BUTTONS
+   ========================================================= */
+
+function clearAppButtons() {
+
+    document
+        .querySelectorAll(".appButton")
+        .forEach(function(button) {
+
+            button.remove();
+
+        });
+
 }
 
 
 /* =========================================================
-   CREATE INVISIBLE APP BUTTON
+   CREATE CLICKABLE APP
    ========================================================= */
 
-function createAppButton(
+function addApp(
     name,
     left,
     top,
@@ -102,13 +99,9 @@ function createAppButton(
         document.createElement("button");
 
 
-    button.type =
-        "button";
+    button.type = "button";
 
-
-    button.className =
-        "appButton";
-
+    button.className = "appButton";
 
     button.setAttribute(
         "aria-label",
@@ -119,14 +112,11 @@ function createAppButton(
     button.style.left =
         left + "%";
 
-
     button.style.top =
         top + "%";
 
-
     button.style.width =
         width + "%";
-
 
     button.style.height =
         height + "%";
@@ -160,49 +150,23 @@ function createAppButton(
 
 
 /* =========================================================
-   REMOVE ALL APP BUTTONS
-   ========================================================= */
-
-function removeAppButtons() {
-
-    document
-        .querySelectorAll(".appButton")
-        .forEach(
-            function(button) {
-
-                button.remove();
-
-            }
-        );
-
-}
-
-
-/* =========================================================
    PAGE 1
    ========================================================= */
 
 function showPage1() {
 
-    currentScreen =
-        "page1";
+    currentPage = "page1";
+
+    appWindow.classList.remove("open");
+
+    phoneImage.src = PAGE1;
+
+    clearAppButtons();
 
 
-    closeCurrentApp();
+    /* Messages */
 
-
-    phoneImage.src =
-        PAGE1;
-
-
-    removeAppButtons();
-
-
-    /*
-     * PAGE 1 APPS
-     */
-
-    createAppButton(
+    addApp(
         "Messages",
         43,
         25,
@@ -211,7 +175,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Camera */
+
+    addApp(
         "Camera",
         54,
         25,
@@ -220,7 +186,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Social Fast */
+
+    addApp(
         "Social Fast",
         36,
         36,
@@ -229,7 +197,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Stocks */
+
+    addApp(
         "Stocks",
         47,
         36,
@@ -238,7 +208,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Maps */
+
+    addApp(
         "Maps",
         58,
         36,
@@ -247,7 +219,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Photos */
+
+    addApp(
         "Photos",
         36,
         47,
@@ -256,7 +230,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Weather */
+
+    addApp(
         "Weather",
         47,
         47,
@@ -265,7 +241,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Notes */
+
+    addApp(
         "Notes",
         58,
         47,
@@ -274,7 +252,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* iPodTunes */
+
+    addApp(
         "iPodTunes",
         30,
         58,
@@ -283,7 +263,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Settings */
+
+    addApp(
         "Settings",
         41,
         58,
@@ -292,7 +274,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Clock */
+
+    addApp(
         "Clock",
         52,
         58,
@@ -301,7 +285,9 @@ function showPage1() {
     );
 
 
-    createAppButton(
+    /* Videos */
+
+    addApp(
         "Videos",
         63,
         58,
@@ -318,25 +304,18 @@ function showPage1() {
 
 function showPage2() {
 
-    currentScreen =
-        "page2";
+    currentPage = "page2";
+
+    appWindow.classList.remove("open");
+
+    phoneImage.src = PAGE2;
+
+    clearAppButtons();
 
 
-    closeCurrentApp();
+    /* Lingo */
 
-
-    phoneImage.src =
-        PAGE2;
-
-
-    removeAppButtons();
-
-
-    /*
-     * PAGE 2 APPS
-     */
-
-    createAppButton(
+    addApp(
         "Lingo",
         38,
         25,
@@ -345,7 +324,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* SplashFace */
+
+    addApp(
         "SplashFace",
         51,
         25,
@@ -354,7 +335,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Thumb */
+
+    addApp(
         "Thumb",
         31,
         36,
@@ -363,7 +346,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* DanWarp */
+
+    addApp(
         "DanWarp",
         44,
         36,
@@ -372,7 +357,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Image */
+
+    addApp(
         "Image",
         56,
         36,
@@ -381,7 +368,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Chrono */
+
+    addApp(
         "Chrono",
         31,
         47,
@@ -390,7 +379,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* ZapLook */
+
+    addApp(
         "ZapLook",
         44,
         47,
@@ -399,7 +390,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Weather */
+
+    addApp(
         "Weather",
         56,
         47,
@@ -408,7 +401,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Music */
+
+    addApp(
         "Music",
         27,
         58,
@@ -417,7 +412,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Monkey */
+
+    addApp(
         "Monkey",
         40,
         58,
@@ -426,7 +423,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Remark */
+
+    addApp(
         "Remark",
         52,
         58,
@@ -435,7 +434,9 @@ function showPage2() {
     );
 
 
-    createAppButton(
+    /* Settings */
+
+    addApp(
         "Settings",
         63,
         58,
@@ -452,18 +453,13 @@ function showPage2() {
 
 function showSlap() {
 
-    currentScreen =
-        "slap";
+    currentPage = "slap";
 
+    appWindow.classList.remove("open");
 
-    closeCurrentApp();
+    phoneImage.src = SLAP;
 
-
-    phoneImage.src =
-        SLAP;
-
-
-    removeAppButtons();
+    clearAppButtons();
 
 }
 
@@ -474,17 +470,11 @@ function showSlap() {
 
 function openApp(name) {
 
-    appTitle.textContent =
-        name;
+    appTitle.textContent = name;
 
+    appContent.innerHTML = "";
 
-    appContent.innerHTML =
-        "";
-
-
-    appWindow.classList.add(
-        "open"
-    );
+    appWindow.classList.add("open");
 
 
     /* =====================================================
@@ -558,15 +548,10 @@ function openApp(name) {
             <div class="photoGrid">
 
                 <div class="photo">🌴</div>
-
                 <div class="photo">🌊</div>
-
                 <div class="photo">🐶</div>
-
                 <div class="photo">🏖️</div>
-
                 <div class="photo">🌅</div>
-
                 <div class="photo">📸</div>
 
             </div>
@@ -652,17 +637,11 @@ function openApp(name) {
 
             <div class="card">
 
-                <h2>
-                    ☀️ 72°F
-                </h2>
+                <h2>☀️ 72°F</h2>
 
-                <p>
-                    Sunny
-                </p>
+                <p>Sunny</p>
 
-                <p>
-                    Feels like 74°F
-                </p>
+                <p>Feels like 74°F</p>
 
             </div>
 
@@ -679,9 +658,7 @@ function openApp(name) {
 
 
         document
-            .getElementById(
-                "refreshWeather"
-            )
+            .getElementById("refreshWeather")
             .onclick = function() {
 
                 document.getElementById(
@@ -879,21 +856,13 @@ function openApp(name) {
                 style="text-align:center"
             >
 
-                <div
-                    style="
-                        font-size:55px;
-                    "
-                >
+                <div style="font-size:55px">
                     🎵
                 </div>
 
-                <b>
-                    Pear Music
-                </b>
+                <b>Pear Music</b>
 
-                <p>
-                    Nothing playing
-                </p>
+                <p>Nothing playing</p>
 
             </div>
 
@@ -960,8 +929,7 @@ function openApp(name) {
                     text-align:center;
                     margin:15px;
                 "
-            >
-            </div>
+            ></div>
 
             <button
                 id="updateTime"
@@ -987,9 +955,7 @@ function openApp(name) {
 
 
         document
-            .getElementById(
-                "updateTime"
-            )
+            .getElementById("updateTime")
             .onclick =
             updateTime;
 
@@ -1253,9 +1219,7 @@ function openApp(name) {
 
 
         document
-            .getElementById(
-                "zapSearchButton"
-            )
+            .getElementById("zapSearchButton")
             .onclick = function() {
 
                 const search =
@@ -1348,9 +1312,7 @@ function openApp(name) {
 
 
         document
-            .getElementById(
-                "saveRemark"
-            )
+            .getElementById("saveRemark")
             .onclick = function() {
 
                 document.getElementById(
@@ -1364,7 +1326,7 @@ function openApp(name) {
 
 
     /* =====================================================
-       DEFAULT
+       ALL OTHER APPS
        ===================================================== */
 
     else {
@@ -1407,10 +1369,8 @@ phoneArea.addEventListener(
     "pointerdown",
     function(event) {
 
-
         /*
-         * Don't start a page swipe when
-         * touching an app icon.
+         * Don't swipe when clicking an app.
          */
 
         if (
@@ -1426,8 +1386,7 @@ phoneArea.addEventListener(
 
 
         /*
-         * Don't start a page swipe inside
-         * the app window.
+         * Don't swipe inside an app.
          */
 
         if (
@@ -1444,12 +1403,10 @@ phoneArea.addEventListener(
         startX =
             event.clientX;
 
-
         startY =
             event.clientY;
 
-
-        swipeActive = true;
+        swipeStarted = true;
 
     }
 );
@@ -1463,20 +1420,16 @@ phoneArea.addEventListener(
     "pointerup",
     function(event) {
 
-
-        if (!swipeActive) {
-
+        if (!swipeStarted) {
             return;
-
         }
 
 
-        swipeActive = false;
+        swipeStarted = false;
 
 
         const endX =
             event.clientX;
-
 
         const endY =
             event.clientY;
@@ -1485,70 +1438,57 @@ phoneArea.addEventListener(
         const deltaX =
             endX - startX;
 
-
         const deltaY =
             endY - startY;
 
 
-        const horizontal =
+        const absX =
             Math.abs(deltaX);
 
-
-        const vertical =
+        const absY =
             Math.abs(deltaY);
 
 
-        const minimumSwipe =
+        const minimum =
             60;
 
 
-        /*
-         * SIDEWAYS
-         */
+        /* SIDE TO SIDE */
 
         if (
-            horizontal > vertical &&
-            horizontal >= minimumSwipe
+            absX > absY &&
+            absX >= minimum
         ) {
 
-
             if (
-                currentScreen === "slap"
+                currentPage === "slap"
             ) {
 
                 showPage1();
 
-            }
-
-            else {
+            } else {
 
                 showSlap();
 
             }
-
 
             return;
 
         }
 
 
-        /*
-         * UP / DOWN
-         */
+        /* UP / DOWN */
 
         if (
-            vertical > horizontal &&
-            vertical >= minimumSwipe
+            absY > absX &&
+            absY >= minimum
         ) {
 
-
-            /*
-             * SWIPE UP
-             */
+            /* SWIPE UP */
 
             if (
                 deltaY < 0 &&
-                currentScreen === "page1"
+                currentPage === "page1"
             ) {
 
                 showPage2();
@@ -1556,13 +1496,11 @@ phoneArea.addEventListener(
             }
 
 
-            /*
-             * SWIPE DOWN
-             */
+            /* SWIPE DOWN */
 
             else if (
                 deltaY > 0 &&
-                currentScreen === "page2"
+                currentPage === "page2"
             ) {
 
                 showPage1();
@@ -1576,7 +1514,7 @@ phoneArea.addEventListener(
 
 
 /* =========================================================
-   START
+   START ON PAGE 1
    ========================================================= */
 
 showPage1();
