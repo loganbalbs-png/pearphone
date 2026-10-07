@@ -1,195 +1,24 @@
 const phone = document.getElementById("phone");
 const phoneImage = document.getElementById("phoneImage");
 
-const appScreen = document.getElementById("appScreen");
-const appTitle = document.getElementById("appTitle");
-const appText = document.getElementById("appText");
-const backButton = document.getElementById("backButton");
+const appScreen = document.getElementById("app");
+const appName = document.getElementById("appName");
+const appDescription = document.getElementById("appDescription");
+const backButton = document.getElementById("back");
 
-
-/* =====================================================
-   EXACT FILENAMES FROM YOUR GITHUB REPOSITORY
-   ===================================================== */
-
-const PAGE_1 = "pearphone.png";
-const PAGE_2 = "pearphonepage2.png";
-const SLAP = "theslap.png";
-
-
-let currentScreen = "page1";
-
+let currentPage = 1;
 
 let startX = 0;
 let startY = 0;
-let trackingSwipe = false;
 
 
 /* =====================================================
-   SHOW THE PICTURE
+   EXACT FILE NAMES
    ===================================================== */
 
-function showScreen(screen) {
-
-    currentScreen = screen;
-
-    removeButtons();
-
-    if (screen === "page1") {
-
-        phoneImage.src = PAGE_1;
-
-        createPage1Buttons();
-
-    }
-
-    else if (screen === "page2") {
-
-        phoneImage.src = PAGE_2;
-
-        createPage2Buttons();
-
-    }
-
-    else if (screen === "slap") {
-
-        phoneImage.src = SLAP;
-
-        createSlapButtons();
-    }
-}
-
-
-/* =====================================================
-   REMOVE OLD INVISIBLE BUTTONS
-   ===================================================== */
-
-function removeButtons() {
-
-    document.querySelectorAll(".appButton").forEach(button => {
-        button.remove();
-    });
-}
-
-
-/* =====================================================
-   CREATE AN INVISIBLE BUTTON
-   ===================================================== */
-
-function addAppButton(name, left, top, width, height) {
-
-    const button = document.createElement("button");
-
-    button.className = "appButton";
-
-    button.style.left = left + "%";
-    button.style.top = top + "%";
-
-    button.style.width = width + "%";
-    button.style.height = height + "%";
-
-    button.setAttribute("aria-label", name);
-
-    button.addEventListener("pointerdown", function(event) {
-        event.stopPropagation();
-    });
-
-    button.addEventListener("pointerup", function(event) {
-        event.stopPropagation();
-    });
-
-    button.addEventListener("click", function(event) {
-
-        event.stopPropagation();
-
-        openApp(name);
-    });
-
-    phone.appendChild(button);
-}
-
-
-/* =====================================================
-   PAGE 1
-   pearphone.png
-   ===================================================== */
-
-function createPage1Buttons() {
-
-    addAppButton("Messages", 38, 25, 14, 12);
-
-    addAppButton("Camera", 53, 25, 14, 12);
-
-    addAppButton("Social Fast", 34, 35, 14, 12);
-
-    addAppButton("Stocks", 46, 35, 14, 12);
-
-    addAppButton("Maps", 57, 35, 14, 12);
-
-    addAppButton("Photos", 34, 46, 14, 12);
-
-    addAppButton("Weather", 46, 46, 14, 12);
-
-    addAppButton("Notes", 57, 46, 14, 12);
-
-    addAppButton("iPodTunes", 28, 56, 14, 12);
-
-    addAppButton("Settings", 40, 56, 14, 12);
-
-    addAppButton("Clock", 51, 56, 14, 12);
-
-    addAppButton("Videos", 62, 56, 14, 12);
-}
-
-
-/* =====================================================
-   PAGE 2
-   pearphonepage2.png
-   ===================================================== */
-
-function createPage2Buttons() {
-
-    addAppButton("Lingo", 38, 25, 14, 12);
-
-    addAppButton("SplashFace", 51, 25, 14, 12);
-
-    addAppButton("Thumb", 31, 36, 14, 12);
-
-    addAppButton("DanWarp", 44, 36, 14, 12);
-
-    addAppButton("Image", 56, 36, 14, 12);
-
-    addAppButton("Chrono", 31, 47, 14, 12);
-
-    addAppButton("ZapLook", 44, 47, 14, 12);
-
-    addAppButton("Weather", 56, 47, 14, 12);
-
-    addAppButton("Music", 27, 58, 14, 12);
-
-    addAppButton("Monkey", 39, 58, 14, 12);
-
-    addAppButton("Remark", 51, 58, 14, 12);
-
-    addAppButton("Settings", 62, 58, 14, 12);
-}
-
-
-/* =====================================================
-   THE SLAP
-   theslap.png
-   ===================================================== */
-
-function createSlapButtons() {
-
-    /*
-     * TheSlap is currently displayed exactly as
-     * your uploaded picture.
-     *
-     * We can make the text box, emoji selector,
-     * keyboard, Home, Friends, Mail and Photos
-     * interactive next.
-     */
-}
+const PAGE1 = "pearphone.png";
+const PAGE2 = "pearphonepage2.png";
+const SLAP = "theslap.png";
 
 
 /* =====================================================
@@ -198,9 +27,9 @@ function createSlapButtons() {
 
 function openApp(name) {
 
-    appTitle.textContent = name;
+    appName.textContent = name;
 
-    appText.textContent = name + " app";
+    appDescription.textContent = name + " app";
 
     appScreen.classList.add("open");
 }
@@ -210,7 +39,7 @@ function openApp(name) {
    CLOSE APP
    ===================================================== */
 
-backButton.addEventListener("click", function() {
+backButton.addEventListener("click", function () {
 
     appScreen.classList.remove("open");
 
@@ -218,88 +47,417 @@ backButton.addEventListener("click", function() {
 
 
 /* =====================================================
-   SWIPE START
+   REMOVE INVISIBLE BUTTONS
    ===================================================== */
 
-phone.addEventListener("pointerdown", function(event) {
+function clearButtons() {
+
+    const buttons = document.querySelectorAll(".app");
+
+    buttons.forEach(function (button) {
+        button.remove();
+    });
+
+}
+
+
+/* =====================================================
+   CREATE INVISIBLE APP BUTTON
+   ===================================================== */
+
+function addButton(name, x, y, width, height) {
+
+    const button = document.createElement("button");
+
+    button.className = "app";
+
+    button.setAttribute("aria-label", name);
+
+    button.style.left = x + "%";
+    button.style.top = y + "%";
+
+    button.style.width = width + "%";
+    button.style.height = height + "%";
+
+    button.addEventListener("click", function (event) {
+
+        event.stopPropagation();
+
+        openApp(name);
+
+    });
+
+    phone.appendChild(button);
+
+}
+
+
+/* =====================================================
+   PAGE 1
+   pearphone.png
+   ===================================================== */
+
+function page1() {
+
+    currentPage = 1;
+
+    clearButtons();
+
+    phoneImage.src = PAGE1;
+
+
+    /*
+       These buttons are positioned over the
+       actual icons in pearphone.png.
+    */
+
+
+    // Messages
+    addButton(
+        "Messages",
+        46,
+        28,
+        11,
+        11
+    );
+
+
+    // Camera
+    addButton(
+        "Camera",
+        57,
+        28,
+        11,
+        11
+    );
+
+
+    // Social Fast
+    addButton(
+        "Social Fast",
+        40,
+        39,
+        11,
+        11
+    );
+
+
+    // Stocks
+    addButton(
+        "Stocks",
+        50,
+        39,
+        11,
+        11
+    );
+
+
+    // Maps
+    addButton(
+        "Maps",
+        61,
+        39,
+        11,
+        11
+    );
+
+
+    // Photos
+    addButton(
+        "Photos",
+        40,
+        50,
+        11,
+        11
+    );
+
+
+    // Weather
+    addButton(
+        "Weather",
+        51,
+        50,
+        11,
+        11
+    );
+
+
+    // Notes
+    addButton(
+        "Notes",
+        62,
+        50,
+        11,
+        11
+    );
+
+
+    // iPodTunes
+    addButton(
+        "iPodTunes",
+        33,
+        60,
+        11,
+        11
+    );
+
+
+    // Settings
+    addButton(
+        "Settings",
+        44,
+        60,
+        11,
+        11
+    );
+
+
+    // Clock
+    addButton(
+        "Clock",
+        55,
+        60,
+        11,
+        11
+    );
+
+
+    // Videos
+    addButton(
+        "Videos",
+        66,
+        60,
+        11,
+        11
+    );
+
+}
+
+
+/* =====================================================
+   PAGE 2
+   pearphonepage2.png
+   ===================================================== */
+
+function page2() {
+
+    currentPage = 2;
+
+    clearButtons();
+
+    phoneImage.src = PAGE2;
+
+
+    // Lingo
+    addButton(
+        "Lingo",
+        40,
+        28,
+        11,
+        11
+    );
+
+
+    // SplashFace
+    addButton(
+        "SplashFace",
+        53,
+        28,
+        11,
+        11
+    );
+
+
+    // Thumb
+    addButton(
+        "Thumb",
+        33,
+        39,
+        11,
+        11
+    );
+
+
+    // DanWarp
+    addButton(
+        "DanWarp",
+        46,
+        39,
+        11,
+        11
+    );
+
+
+    // Image
+    addButton(
+        "Image",
+        59,
+        39,
+        11,
+        11
+    );
+
+
+    // Chrono
+    addButton(
+        "Chrono",
+        33,
+        51,
+        11,
+        11
+    );
+
+
+    // ZapLook
+    addButton(
+        "ZapLook",
+        46,
+        51,
+        11,
+        11
+    );
+
+
+    // Weather
+    addButton(
+        "Weather",
+        59,
+        51,
+        11,
+        11
+    );
+
+
+    // Music
+    addButton(
+        "Music",
+        28,
+        62,
+        11,
+        11
+    );
+
+
+    // Monkey
+    addButton(
+        "Monkey",
+        41,
+        62,
+        11,
+        11
+    );
+
+
+    // Remark
+    addButton(
+        "Remark",
+        54,
+        62,
+        11,
+        11
+    );
+
+
+    // Settings
+    addButton(
+        "Settings",
+        66,
+        62,
+        11,
+        11
+    );
+
+}
+
+
+/* =====================================================
+   SHOW THE SLAP
+   ===================================================== */
+
+function slap() {
+
+    clearButtons();
+
+    phoneImage.src = SLAP;
+
+    currentPage = 0;
+
+}
+
+
+/* =====================================================
+   SWIPE DETECTION
+   ===================================================== */
+
+phone.addEventListener("pointerdown", function (event) {
 
     startX = event.clientX;
     startY = event.clientY;
 
-    trackingSwipe = true;
 });
 
 
-/* =====================================================
-   SWIPE END
-   ===================================================== */
-
-phone.addEventListener("pointerup", function(event) {
-
-    if (!trackingSwipe) {
-        return;
-    }
-
-    trackingSwipe = false;
+phone.addEventListener("pointerup", function (event) {
 
     const endX = event.clientX;
     const endY = event.clientY;
 
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
+    const changeX = endX - startX;
+    const changeY = endY - startY;
 
-    const minimumSwipe = 60;
+    const absX = Math.abs(changeX);
+    const absY = Math.abs(changeY);
+
+    const minimum = 60;
 
 
-    /* -----------------------------
-       SIDE TO SIDE
-       ----------------------------- */
+    /* Horizontal swipe */
 
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (absX > absY && absX > minimum) {
 
-        if (Math.abs(deltaX) >= minimumSwipe) {
+        if (currentPage === 0) {
 
-            if (currentScreen === "slap") {
+            page1();
 
-                showScreen("page1");
+        } else {
 
-            } else {
+            slap();
 
-                showScreen("slap");
-            }
         }
 
         return;
     }
 
 
-    /* -----------------------------
-       UP / DOWN
-       ----------------------------- */
+    /* Vertical swipe */
 
-    if (Math.abs(deltaY) >= minimumSwipe) {
+    if (absY > absX && absY > minimum) {
 
-        if (deltaY < 0) {
+        if (changeY < 0) {
 
-            // Swipe UP
-            if (currentScreen === "page1") {
-                showScreen("page2");
+            /* Swipe UP */
+
+            if (currentPage === 1) {
+                page2();
             }
 
         } else {
 
-            // Swipe DOWN
-            if (currentScreen === "page2") {
-                showScreen("page1");
+            /* Swipe DOWN */
+
+            if (currentPage === 2) {
+                page1();
             }
+
         }
+
     }
 
 });
 
 
 /* =====================================================
-   START
+   START ON PAGE 1
    ===================================================== */
 
-showScreen("page1");
+page1();
