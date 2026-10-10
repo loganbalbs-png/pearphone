@@ -33,8 +33,6 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        /* PHONE */
-
         #phoneArea {
             position: relative;
             width: min(92vh, 92vw);
@@ -44,8 +42,6 @@
             transform-origin: center center;
             touch-action: none;
         }
-
-        /* ACTUAL PEAR PHONE IMAGE */
 
         #phoneImage {
             position: absolute;
@@ -60,8 +56,6 @@
             -webkit-user-select: none;
             -webkit-user-drag: none;
         }
-
-        /* INVISIBLE CLICKABLE APP AREAS */
 
         .appButton {
             position: absolute;
@@ -79,8 +73,6 @@
             border-radius: 50%;
         }
 
-        /* INVISIBLE OVERLAY ON THE EXISTING HOME BUTTON */
-
         #pearHomeButton {
             position: absolute;
             left: 42%;
@@ -93,8 +85,6 @@
             cursor: pointer;
             touch-action: manipulation;
         }
-
-        /* SMALL APP WINDOW */
 
         #appWindow {
             position: absolute;
@@ -117,8 +107,6 @@
             flex-direction: column;
         }
 
-        /* APP HEADER */
-
         #appHeader {
             height: 34px;
             min-height: 34px;
@@ -136,8 +124,6 @@
             font-size: 12px;
         }
 
-        /* CLOSE BUTTON */
-
         #closeApp {
             width: 24px;
             height: 24px;
@@ -150,8 +136,6 @@
             padding: 0;
             cursor: pointer;
         }
-
-        /* APP CONTENT */
 
         #appContent {
             flex: 1;
@@ -220,16 +204,23 @@
             font-size: 20px;
         }
 
-        /* KEYBOARD: INSIDE THE APP WINDOW */
+        /* REAL VIDEO PLAYER */
+
+        #samCatVideo {
+            display: block;
+            width: 100%;
+            max-height: 180px;
+            background: #000;
+            border-radius: 7px;
+            margin: 5px 0;
+        }
+
+        /* KEYBOARD INSIDE APP WINDOW */
 
         #pearKeyboard {
             position: relative;
-            left: auto;
-            right: auto;
-            bottom: auto;
             width: 100%;
             flex-shrink: 0;
-            z-index: 500;
             display: none;
             padding: 5px;
             background: #202020;
@@ -283,7 +274,7 @@
             flex: 1.5;
         }
 
-        /* SLAP TEXT BAR */
+        /* THE SLAP TEXT BAR */
 
         .pearTypingBar {
             width: 100%;
@@ -305,10 +296,7 @@
 
         #slapTypingArea {
             position: relative;
-            left: auto;
-            top: auto;
             width: 100%;
-            z-index: auto;
             display: none;
             padding: 4px;
         }
@@ -342,14 +330,12 @@
             draggable="false"
         >
 
-        <!-- INVISIBLE BUTTON OVER THE EXISTING BLACK HOME BUTTON -->
         <button
             id="pearHomeButton"
             type="button"
             aria-label="Pear Phone Home"
         ></button>
 
-        <!-- THE SLAP TEXT BAR -->
         <div id="slapTypingArea">
             <div
                 id="slapTextBar"
@@ -359,7 +345,6 @@
             </div>
         </div>
 
-        <!-- SMALL APP TAB -->
         <div id="appWindow">
 
             <div id="appHeader">
@@ -374,7 +359,6 @@
 
             <div id="appContent"></div>
 
-            <!-- KEYBOARD IS INSIDE THE APP WINDOW -->
             <div id="pearKeyboard"></div>
 
         </div>
