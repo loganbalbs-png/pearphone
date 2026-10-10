@@ -33,8 +33,9 @@
     const PAGE1 = "pearphone.png";
     const PAGE2 = "pearphonepage2.png";
     const SLAP = "theslap.png";
-    const VIDEO_FILE = "samandcatintro.mp4";
-
+    
+    const VIDEO_FILE = "videos/samandcatintro.mp4";
+   
     let currentPage = "page1";
     let currentApp = null;
     let swipeStart = null;
