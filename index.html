@@ -11,7 +11,6 @@
     <title>Pear Phone</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -34,66 +33,44 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        /* =====================================================
-           PHONE
-           ===================================================== */
+        /* PHONE */
 
         #phoneArea {
             position: relative;
-
             width: min(92vh, 92vw);
             height: min(92vh, 92vw);
-
             flex-shrink: 0;
-
             transform: rotate(90deg) scale(1.28);
-
             transform-origin: center center;
-
             touch-action: none;
         }
 
-        /* =====================================================
-           YOUR ACTUAL PEAR PHONE IMAGE
-           ===================================================== */
+        /* ACTUAL PEAR PHONE IMAGE */
 
         #phoneImage {
             position: absolute;
-
             left: 0;
             top: 0;
-
             width: 100%;
             height: 100%;
-
             object-fit: contain;
-
             display: block;
-
             pointer-events: none;
-
             user-select: none;
             -webkit-user-select: none;
             -webkit-user-drag: none;
         }
 
-        /* =====================================================
-           INVISIBLE CLICKABLE APP AREAS
-           ===================================================== */
+        /* INVISIBLE CLICKABLE APP AREAS */
 
         .appButton {
             position: absolute;
-
             border: none;
             padding: 0;
             margin: 0;
-
             background: transparent;
-
             z-index: 50;
-
             cursor: pointer;
-
             touch-action: manipulation;
         }
 
@@ -102,59 +79,36 @@
             border-radius: 50%;
         }
 
-        /* =====================================================
-           BLACK PEAR PHONE HOME BUTTON
-           This sits over the EXISTING black button in your PNG.
-           It is invisible, so it does not change the phone.
-           ===================================================== */
+        /* INVISIBLE OVERLAY ON THE EXISTING HOME BUTTON */
 
         #pearHomeButton {
             position: absolute;
-
             left: 42%;
             top: 76%;
-
             width: 16%;
             height: 10%;
-
             border: none;
             background: transparent;
-
             z-index: 300;
-
             cursor: pointer;
-
             touch-action: manipulation;
         }
 
-        /* =====================================================
-           SMALL APP TAB
-           ===================================================== */
+        /* SMALL APP WINDOW */
 
         #appWindow {
             position: absolute;
-
             left: 32%;
             top: 30%;
-
             width: 36%;
             height: 40%;
-
             z-index: 200;
-
             display: none;
-
             overflow: hidden;
-
             background: #f4f4f4;
-
             border: 2px solid #222;
-
             border-radius: 13px;
-
-            box-shadow:
-                0 6px 18px rgba(0, 0, 0, 0.55);
-
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
             font-family: Arial, Helvetica, sans-serif;
         }
 
@@ -163,29 +117,18 @@
             flex-direction: column;
         }
 
-        /* =====================================================
-           APP HEADER
-           ===================================================== */
+        /* APP HEADER */
 
         #appHeader {
             height: 34px;
             min-height: 34px;
-
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             padding: 0 7px;
-
-            background: linear-gradient(
-                #f8f8f8,
-                #cfcfcf
-            );
-
+            background: linear-gradient(#f8f8f8, #cfcfcf);
             border-bottom: 1px solid #888;
-
             color: #111;
-
             font-weight: bold;
         }
 
@@ -193,171 +136,104 @@
             font-size: 12px;
         }
 
-        /* =====================================================
-           HEADER CLOSE BUTTON
-           ===================================================== */
+        /* CLOSE BUTTON */
 
         #closeApp {
             width: 24px;
             height: 24px;
-
             border: none;
-
             border-radius: 50%;
-
             background: #050505;
-
             color: white;
-
             font-size: 14px;
-
             line-height: 24px;
-
             padding: 0;
-
             cursor: pointer;
         }
 
-        /* =====================================================
-           APP CONTENT
-           ===================================================== */
+        /* APP CONTENT */
 
         #appContent {
             flex: 1;
-
+            min-height: 0;
             overflow: auto;
-
             padding: 8px;
-
             background: #f5f5f5;
-
             color: #111;
-
             font-size: 11px;
-
             touch-action: auto;
         }
 
         .appButtonLarge {
             width: 100%;
-
             min-height: 30px;
-
             margin: 4px 0;
-
             border: none;
-
             border-radius: 7px;
-
             background: #168cff;
-
             color: white;
-
             font-size: 11px;
-
             cursor: pointer;
         }
 
         .appInput {
             width: 100%;
-
             min-height: 30px;
-
             padding: 5px;
-
             margin-bottom: 5px;
-
             border: 1px solid #999;
-
             border-radius: 6px;
-
             font-size: 11px;
         }
 
         .appTextarea {
             width: 100%;
-
             height: 55px;
-
             padding: 5px;
-
             border: 1px solid #999;
-
             border-radius: 6px;
-
             font-size: 11px;
-
             resize: none;
         }
 
         .card {
             background: white;
-
             border: 1px solid #ccc;
-
             border-radius: 7px;
-
             padding: 7px;
-
             margin-bottom: 5px;
         }
 
         .photoGrid {
             display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
+            grid-template-columns: repeat(3, 1fr);
             gap: 4px;
         }
 
         .photo {
             aspect-ratio: 1;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             border-radius: 5px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #66ccff,
-                    #ff99cc
-                );
-
+            background: linear-gradient(135deg, #66ccff, #ff99cc);
             font-size: 20px;
         }
 
-        /* =====================================================
-           KEYBOARD
-           ===================================================== */
+        /* KEYBOARD: INSIDE THE APP WINDOW */
 
         #pearKeyboard {
-            position: absolute;
-
-            left: 3%;
-            right: 3%;
-            bottom: 3%;
-
+            position: relative;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            width: 100%;
+            flex-shrink: 0;
             z-index: 500;
-
             display: none;
-
             padding: 5px;
-
             background: #202020;
-
-            border: 2px solid #000;
-
-            border-radius: 8px;
-
-            box-shadow:
-                0 4px 12px rgba(0,0,0,.55);
-
+            border-top: 2px solid #000;
             touch-action: manipulation;
         }
 
@@ -377,29 +253,16 @@
 
         .key {
             flex: 1;
-
             min-width: 0;
-
             height: 25px;
-
             padding: 0;
-
             border: 1px solid #777;
-
             border-radius: 4px;
-
-            background: linear-gradient(
-                #eeeeee,
-                #bdbdbd
-            );
-
+            background: linear-gradient(#eeeeee, #bdbdbd);
             color: #111;
-
             font-size: 9px;
             font-weight: bold;
-
             cursor: pointer;
-
             touch-action: manipulation;
         }
 
@@ -420,31 +283,19 @@
             flex: 1.5;
         }
 
-        /* =====================================================
-           LINGO / SLAP TEXT BAR
-           ===================================================== */
+        /* SLAP TEXT BAR */
 
         .pearTypingBar {
             width: 100%;
-
             min-height: 30px;
-
             padding: 6px 8px;
-
             border: 1px solid #777;
-
             border-radius: 6px;
-
             background: white;
-
             color: #111;
-
             font-size: 11px;
-
             margin-bottom: 5px;
-
             overflow: hidden;
-
             white-space: nowrap;
         }
 
@@ -452,21 +303,14 @@
             color: #777;
         }
 
-        /* =====================================================
-           SLAP TEXT BAR
-           ===================================================== */
-
         #slapTypingArea {
-            position: absolute;
-
-            left: 25%;
-            top: 35%;
-
-            width: 50%;
-
-            z-index: 150;
-
+            position: relative;
+            left: auto;
+            top: auto;
+            width: 100%;
+            z-index: auto;
             display: none;
+            padding: 4px;
         }
 
         #slapTypingArea.open {
@@ -475,31 +319,20 @@
 
         #slapTextBar {
             width: 100%;
-
             min-height: 34px;
-
             border: 2px solid #222;
-
             border-radius: 7px;
-
-            background: rgba(255,255,255,.96);
-
+            background: rgba(255, 255, 255, 0.96);
             padding: 7px;
-
             font-size: 12px;
-
             color: #111;
-
             overflow: hidden;
-
             white-space: nowrap;
         }
-
     </style>
 </head>
 
 <body>
-
     <div id="phoneArea">
 
         <img
@@ -509,14 +342,14 @@
             draggable="false"
         >
 
-        <!-- EXISTING BLACK PEAR PHONE BUTTON -->
+        <!-- INVISIBLE BUTTON OVER THE EXISTING BLACK HOME BUTTON -->
         <button
             id="pearHomeButton"
             type="button"
             aria-label="Pear Phone Home"
         ></button>
 
-        <!-- SLAP TEXT BAR -->
+        <!-- THE SLAP TEXT BAR -->
         <div id="slapTypingArea">
             <div
                 id="slapTextBar"
@@ -526,35 +359,27 @@
             </div>
         </div>
 
-        <!-- APP TAB -->
+        <!-- SMALL APP TAB -->
         <div id="appWindow">
 
             <div id="appHeader">
-
-                <span id="appTitle">
-                    App
-                </span>
+                <span id="appTitle">App</span>
 
                 <button
                     id="closeApp"
                     type="button"
                     aria-label="Close app"
-                >
-                    ●
-                </button>
-
+                >●</button>
             </div>
 
             <div id="appContent"></div>
 
+            <!-- KEYBOARD IS INSIDE THE APP WINDOW -->
+            <div id="pearKeyboard"></div>
+
         </div>
-
-        <!-- KEYBOARD -->
-        <div id="pearKeyboard"></div>
-
     </div>
 
     <script src="app.js"></script>
-
 </body>
 </html>
